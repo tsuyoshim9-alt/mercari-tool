@@ -263,7 +263,7 @@ async function analyzeImages() {
     const compressedUrls = selected.map(img => img.compressedDataUrl);
 
     // 3. Send to API
-    const response = await fetch('/api/analyze', {
+    const response = await fetch('/.netlify/functions/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ images: compressedUrls }),
