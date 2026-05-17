@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>メルカリ出品文 自動生成ツール</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+  <div class="app">
+
+    <header class="header">
+      <div class="header-inner">
+        <h1>メルカリ出品文 自動生成ツール</h1>
+        <p>商品写真をアップロードするだけで、タイトルと説明文を自動生成します</p>
+      </div>
+    </header>
+
+    <div class="ai-warning">
+      <span class="warning-icon">⚠️</span>
+      <span>AIの解析結果は参考情報です。ブランド名、型番、素材、状態、真贋については必ずご自身でもご確認ください。</span>
+    </div>
+
+    <main class="main">
+
+      <!-- Section 1: Upload -->
+      <section class="card" id="section-upload">
+        <h2 class="section-title">① 写真をアップロード</h2>
+
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-inner">
+            <div class="drop-icon">📷</div>
+            <p class="drop-text">写真をここにドラッグ＆ドロップ</p>
+            <p class="drop-or">または</p>
+            <label class="btn btn-primary" for="fileInput">写真を選択する</label>
+            <input type="file" id="fileInput" multiple accept="image/*" hidden>
+          </div>
+          <p class="drop-hint">JPEG・PNG・WebP 対応 ／ 最大20枚</p>
+        </div>
+
+        <div class="error-banner" id="uploadError" hidden></div>
+      </section>
+
+      <!-- Section 2: Gallery -->
+      <section class="card" id="section-gallery" hidden>
+        <h2 class="section-title">
+          ② アップロード画像
+          <span class="image-count-badge"><span id="imageCount">0</span>/20枚</span>
+        </h2>
+        <p class="section-hint">ドラッグで並び替え可能 ／ 1枚目がメイン画像になります</p>
+        <div class="image-gallery" id="imageGallery"></div>
+      </section>
+
+      <!-- Section 3: Analyze -->
+      <section class="card analyze-card" id="section-analyze">
+        <button class="btn btn-analyze" id="analyzeBtn" disabled>
+          <span>🔍</span> AI解析を開始する
+        </button>
+        <p class="analyze-hint" id="analyzeHint">写真をアップロードすると解析できます</p>
+        <div class="analysis-info" id="analysisInfo" hidden></div>
+      </section>
+
+      <!-- Results -->
+      <div id="resultsSection" hidden>
+
+        <!-- Section 4: Category Info -->
+        <section class="card" id="section-category">
+          <h2 class="section-title">④ 商品カテゴリ・基本情報</h2>
+          <p class="section-hint">クリックして編集できます</p>
+          <div class="category-grid" id="categoryGrid"></div>
+        </section>
+
+        <!-- Section 5: Size Form -->
+        <section class="card" id="section-size">
+          <h2 class="section-title">⑤ 採寸情報の入力</h2>
+          <p class="section-hint">実際に採寸した値を入力してください（説明文のサイズ欄に反映されます）</p>
+          <div class="size-form" id="sizeForm"></div>
+          <button class="btn btn-secondary" id="applySizeBtn">採寸情報を説明文に反映する</button>
+        </section>
+
+        <!-- Section 6: Titles -->
+        <section class="card" id="section-titles">
+          <h2 class="section-title">⑥ タイトル案（3つ）</h2>
+          <p class="section-hint">使用するタイトルを選んでください。クリックで編集もできます。</p>
+          <div class="title-list" id="titleList"></div>
+        </section>
+
+        <!-- Section 7: Keywords -->
+        <section class="card" id="section-keywords">
+          <h2 class="section-title">⑦ キーワード候補</h2>
+          <p class="section-hint">クリックで選択／解除できます。選択したキーワードはまとめてコピー可能です。</p>
+          <div class="keyword-chips" id="keywordChips"></div>
+          <div class="keyword-actions">
+            <button class="btn btn-secondary btn-sm" id="copyKeywordsBtn">キーワードをコピー</button>
+          </div>
+        </section>
+
+        <!-- Section 8: Description -->
+        <section class="card" id="section-description">
+          <h2 class="section-title">⑧ 商品説明文</h2>
+          <div class="description-wrapper">
+            <textarea class="description-area" id="descriptionArea" rows="22" placeholder="AI解析後に説明文が生成されます"></textarea>
+            <div class="char-count"><span id="descCharCount">0</span>文字</div>
+          </div>
+        </section>
+
+        <!-- Section 9: Copy Buttons -->
+        <section class="card" id="section-copy">
+          <h2 class="section-title">⑨ コピー</h2>
+          <div class="copy-buttons">
+            <button class="btn btn-copy" id="copyTitleBtn">📋 タイトルをコピー</button>
+            <button class="btn btn-copy" id="copyDescBtn">📋 説明文をコピー</button>
+            <button class="btn btn-copy btn-copy-all" id="copyAllBtn">📋 タイトル＋説明文をまとめてコピー</button>
+          </div>
+          <div class="copy-toast" id="copyToast" hidden></div>
+        </section>
+
+        <!-- Reset -->
+        <div class="reset-area">
+          <button class="btn btn-ghost" id="resetBtn">🔄 新しい商品を解析する</button>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" hidden>
+      <div class="loading-box">
+        <div class="loading-spinner"></div>
+        <p class="loading-title">AIが商品を解析中...</p>
+        <p class="loading-sub">写真の枚数によって30〜60秒かかります</p>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>このツールはAIによる出品補助ツールです。出品前に必ず内容をご自身でご確認ください。</p>
+    </footer>
+
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
