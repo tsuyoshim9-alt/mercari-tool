@@ -1,4 +1,4 @@
-const Anthropic = require('@anthropic-ai/sdk');
+import Anthropic from '@anthropic-ai/sdk';
 
 const ANALYSIS_PROMPT = `あなたはメルカリでブランド品・アパレルを販売するエキスパートです。
 提供された商品写真を詳細に解析し、以下の構造でJSONのみを返してください。
@@ -13,7 +13,7 @@ const ANALYSIS_PROMPT = `あなたはメルカリでブランド品・アパレ�
   "pattern": "柄・デザイン（例: 無地、ストライプ、モノグラム）",
   "features": ["デザインの特徴1", "特徴2", "特徴3"],
   "condition": "新品同様・未使用に近い・目立った傷や汚れなし・やや傷や汚れあり・傷や汚れあり から選択",
-  "damage": "傷・汚れ・スレ・使用感の詳細（写真から確認できる範囲で正直に記載。問題なければ「写真から確認できる範囲では目立ったダメージなし」）",
+  "damage": "傷・汚れ・スレ・使用感の詳細（写真から確認できる範囲で正直に記載。なければ「写真から確認できる範囲では目立ったダメージなし」）",
   "model_number": "型番・品番・タグ情報（読み取れれば記載、不明なら「確認不可」）",
   "hardware": "ロゴ・刻印・金具・ファスナーなどの特徴（なければ「特記事項なし」）",
   "size_info": "タグに記載のサイズ（読み取れれば記載、不明なら「タグ確認不可」）",
@@ -65,29 +65,29 @@ const HEADERS = {
   'Content-Type': 'application/json',
 };
 
-const json = (statusCode, body) => ({
+const VALID_MEDIA_TYPES = new Set([
+  'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+]);
+
+const reply = (statusCode, body) => ({
   statusCode,
   headers: HEADERS,
   body: JSON.stringify(body),
 });
 
-const VALID_MEDIA_TYPES = new Set([
-  'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
-]);
-
-exports.handler = async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers: HEADERS, body: '' };
   }
 
   if (event.httpMethod !== 'POST') {
-    return json(405, { error: 'Method not allowed' });
+    return reply(405, { error: 'Method not allowed' });
   }
 
   try {
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-      return json(500, {
+      return reply(500, {
         error: 'APIキーが設定されていません。Netlifyの環境変数（ANTHROPIC_API_KEY）を確認してください。',
       });
     }
@@ -96,19 +96,18 @@ exports.handler = async (event) => {
     try {
       body = JSON.parse(event.body || '{}');
     } catch {
-      return json(400, { error: 'リクエストデータが不正です' });
+      return reply(400, { error: 'リクエストデータが不正です' });
     }
 
     const images = body.images || [];
 
     if (!images.length) {
-      return json(400, { error: '写真がアップロードされていません' });
+      return reply(400, { error: '写真がアップロードされていません' });
     }
     if (images.length > 20) {
-      return json(400, { error: '写真は最大20枚までです' });
+      return reply(400, { error: '写真は最大20枚までです' });
     }
 
-    // Build Anthropic content array
     const content = [];
     for (const dataUrl of images) {
       if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) continue;
@@ -130,7 +129,7 @@ exports.handler = async (event) => {
     }
 
     if (!content.length) {
-      return json(400, { error: '有効な画像ファイルがありません' });
+      return reply(400, { error: '有効な画像ファイルがありません' });
     }
 
     content.push({ type: 'text', text: ANALYSIS_PROMPT });
@@ -144,35 +143,32 @@ exports.handler = async (event) => {
 
     let resultText = response.content[0].text.trim();
 
-    // Extract JSON from possible markdown wrapper
     if (resultText.includes('```json')) {
       resultText = resultText.split('```json')[1].split('```')[0].trim();
     } else if (resultText.includes('```')) {
       resultText = resultText.split('```')[1].split('```')[0].trim();
     }
+
     const s = resultText.indexOf('{');
     const e = resultText.lastIndexOf('}');
     if (s !== -1 && e !== -1) resultText = resultText.slice(s, e + 1);
 
     const result = JSON.parse(resultText);
-    return json(200, { success: true, data: result });
+    return reply(200, { success: true, data: result });
 
   } catch (err) {
     console.error('analyze error:', err);
 
     if (err instanceof SyntaxError) {
-      return json(500, { error: 'AI解析結果の解析に失敗しました。もう一度お試しください。' });
+      return reply(500, { error: 'AI解析結果の解析に失敗しました。もう一度お試しください。' });
     }
     if (err.status === 401) {
-      return json(401, { error: 'APIキーが無効です。Netlifyの環境変数を確認してください。' });
+      return reply(401, { error: 'APIキーが無効です。Netlifyの環境変数を確認してください。' });
     }
     if (err.status === 413) {
-      return json(413, { error: '画像容量が大きすぎます。枚数を減らすか、別の写真でお試しください。' });
-    }
-    if (err.code === 'ERR_NETWORK' || err.name === 'APIConnectionError') {
-      return json(503, { error: '通信エラーが発生しました。しばらくしてからお試しください。' });
+      return reply(413, { error: '画像容量が大きすぎます。枚数を減らすか、別の写真でお試しください。' });
     }
 
-    return json(500, { error: `エラーが発生しました: ${err.message || '不明なエラー'}` });
+    return reply(500, { error: `エラーが発生しました: ${err.message || '不明なエラー'}` });
   }
 };

@@ -269,7 +269,15 @@ async function analyzeImages() {
       body: JSON.stringify({ images: compressedUrls }),
     });
 
-    // 4. Handle 413 explicitly before parsing JSON
+    // 4. Check content-type before JSON.parse (HTML = Function not found or crashed)
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      if (response.status === 404) {
+        throw new Error('AI解析機能が見つかりません（404）。Netlifyの再デプロイをお試しください。');
+      }
+      throw new Error(`サーバーエラーが発生しました（${response.status}）。しばらくしてからお試しください。`);
+    }
+
     if (response.status === 413) {
       throw new Error('画像容量が大きすぎます。枚数を減らすか、別の写真でお試しください。');
     }
