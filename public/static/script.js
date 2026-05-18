@@ -381,36 +381,43 @@ function patchField(key, value) {
    ===================== */
 const SIZE_FIELDS = {
   'バッグ': [
-    { id: 'height',   label: '縦 (cm)' },
-    { id: 'width',    label: '横 (cm)' },
-    { id: 'depth',    label: 'マチ (cm)' },
-    { id: 'handle',   label: '持ち手の長さ (cm)' },
-    { id: 'shoulder', label: 'ショルダーベルト長さ (cm)' },
+    { id: 'height',   label: '縦',               unit: 'cm' },
+    { id: 'width',    label: '横',               unit: 'cm' },
+    { id: 'depth',    label: 'マチ',             unit: 'cm' },
+    { id: 'handle',   label: '持ち手の長さ',     unit: 'cm' },
+    { id: 'shoulder', label: 'ショルダーベルト長さ', unit: 'cm' },
   ],
   'スーツ': [
-    { id: 'shoulder',  label: '肩幅 (cm)' },
-    { id: 'chest',     label: '身幅 (cm)' },
-    { id: 'length',    label: '着丈 (cm)' },
-    { id: 'sleeve',    label: '袖丈 (cm)' },
-    { id: 'waist',     label: 'ウエスト (cm)' },
-    { id: 'pts_waist', label: 'パンツ ウエスト (cm)' },
-    { id: 'inseam',    label: '股下 (cm)' },
+    { section: 'ジャケット' },
+    { id: 'j_size',     label: 'サイズ(相当)', unit: '' },
+    { id: 'j_shoulder', label: '肩幅',         unit: 'cm' },
+    { id: 'j_chest',    label: '身幅',         unit: 'cm' },
+    { id: 'j_sleeve',   label: '袖丈',         unit: 'cm' },
+    { id: 'j_length',   label: '着丈',         unit: 'cm' },
+    { section: 'パンツ' },
+    { id: 'p_size',     label: 'サイズ(相当)', unit: '' },
+    { id: 'p_waist',    label: 'ウエスト',     unit: 'cm' },
+    { id: 'p_total',    label: '総丈',         unit: 'cm' },
+    { id: 'p_rise',     label: '股上',         unit: 'cm' },
+    { id: 'p_inseam',   label: '股下',         unit: 'cm' },
+    { id: 'p_thigh',    label: 'わたり幅',     unit: 'cm' },
+    { id: 'p_hem',      label: '裾幅',         unit: 'cm' },
   ],
   '上着': [
-    { id: 'shoulder', label: '肩幅 (cm)' },
-    { id: 'chest',    label: '身幅 (cm)' },
-    { id: 'length',   label: '着丈 (cm)' },
-    { id: 'sleeve',   label: '袖丈 (cm)' },
+    { id: 'shoulder', label: '肩幅', unit: 'cm' },
+    { id: 'chest',    label: '身幅', unit: 'cm' },
+    { id: 'length',   label: '着丈', unit: 'cm' },
+    { id: 'sleeve',   label: '袖丈', unit: 'cm' },
   ],
   'パンツ': [
-    { id: 'waist',  label: 'ウエスト (cm)' },
-    { id: 'rise',   label: '股上 (cm)' },
-    { id: 'thigh',  label: '渡り幅 (cm)' },
-    { id: 'inseam', label: '股下 (cm)' },
-    { id: 'hem',    label: '裾幅 (cm)' },
+    { id: 'waist',  label: 'ウエスト', unit: 'cm' },
+    { id: 'rise',   label: '股上',    unit: 'cm' },
+    { id: 'thigh',  label: '渡り幅',  unit: 'cm' },
+    { id: 'inseam', label: '股下',    unit: 'cm' },
+    { id: 'hem',    label: '裾幅',    unit: 'cm' },
   ],
   'その他': [
-    { id: 'note', label: 'サイズメモ' },
+    { id: 'note', label: 'サイズメモ', unit: '' },
   ],
 };
 
@@ -424,33 +431,60 @@ function getSizeCategoryKey(category) {
 }
 
 function renderSizeForm(category) {
-  const form = document.getElementById('sizeForm');
-  const key  = getSizeCategoryKey(category);
+  const form   = document.getElementById('sizeForm');
+  const key    = getSizeCategoryKey(category);
   const fields = SIZE_FIELDS[key] || SIZE_FIELDS['その他'];
 
-  form.innerHTML = fields.map(f =>
-    `<div class="size-field">
-       <label class="size-label" for="size_${f.id}">${esc(f.label)}</label>
-       <input type="text" class="size-input" id="size_${f.id}" placeholder="例: 30">
-     </div>`
-  ).join('');
+  form.innerHTML = fields.map(f => {
+    // セクションヘッダー（スーツのジャケット/パンツ区切り）
+    if (f.section) {
+      return `<div class="size-section-label">【${esc(f.section)}】</div>`;
+    }
+    const displayLabel  = f.unit ? `${f.label} (${f.unit})` : f.label;
+    const placeholder   = f.unit ? '例: 30' : '例: L';
+    return `<div class="size-field">
+      <label class="size-label" for="size_${f.id}">${esc(displayLabel)}</label>
+      <input type="text" class="size-input" id="size_${f.id}" placeholder="${placeholder}">
+    </div>`;
+  }).join('');
 }
 
 document.getElementById('applySizeBtn').addEventListener('click', applySizeToDescription);
 
 function applySizeToDescription() {
-  const form   = document.getElementById('sizeForm');
-  const inputs = form.querySelectorAll('input[id^="size_"]');
+  // SIZE_FIELDS から直接構造を読み取り、セクションヘッダーも含めて整形する
+  const currentCategory = state.analysisData?.category ||
+                          document.getElementById('field_category')?.value || '';
+  const catKey = getSizeCategoryKey(currentCategory);
+  const fields = SIZE_FIELDS[catKey] || SIZE_FIELDS['その他'];
 
-  const lines = [];
-  inputs.forEach(input => {
-    if (input.value.trim()) {
-      const label = input.previousElementSibling.textContent;
-      lines.push(`${label}: ${input.value.trim()}`);
+  const lines         = [];
+  let pendingSection  = null;  // まだ出力していないセクションヘッダー
+  let hasAnyValue     = false;
+
+  for (const f of fields) {
+    if (f.section) {
+      pendingSection = f.section;
+      continue;
     }
-  });
+    const input = document.getElementById(`size_${f.id}`);
+    if (!input || !input.value.trim()) continue;
 
-  if (lines.length === 0) {
+    hasAnyValue = true;
+
+    // 値が見つかったら、ため込んでいたセクションヘッダーを先に追加
+    if (pendingSection !== null) {
+      if (lines.length > 0) lines.push('');   // セクション間の空行
+      lines.push(`【${pendingSection}】`);
+      pendingSection = null;
+    }
+
+    const val    = input.value.trim();
+    const suffix = f.unit ? ` ${f.unit}` : '';
+    lines.push(`${f.label}: ${val}${suffix}`);
+  }
+
+  if (!hasAnyValue) {
     alert('採寸情報を入力してください');
     return;
   }
