@@ -2,14 +2,8 @@
   publish = "public"
   functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "22"
+
 [functions]
   node_bundler = "esbuild"
-
-[functions."analyze"]
-  timeout = 26
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "DENY"
