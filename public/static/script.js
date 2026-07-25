@@ -35,6 +35,65 @@ const descCharCount   = document.getElementById('descCharCount');
 const MAX_LONG_EDGE = 1024;
 const JPEG_QUALITY  = 0.75;
 const MAX_API_IMGS  = 8;
+const API_KEY_STORAGE = 'anthropic_api_key';
+
+/* =====================
+   API Key (BYOK)
+   ===================== */
+const apiKeyInput      = document.getElementById('apiKeyInput');
+const saveApiKeyCheck  = document.getElementById('saveApiKeyCheck');
+const toggleApiKeyBtn  = document.getElementById('toggleApiKeyBtn');
+const apiKeyStatus     = document.getElementById('apiKeyStatus');
+
+function getApiKey() {
+  return apiKeyInput.value.trim();
+}
+
+function loadSavedApiKey() {
+  const saved = localStorage.getItem(API_KEY_STORAGE);
+  if (saved) {
+    apiKeyInput.value = saved;
+    saveApiKeyCheck.checked = true;
+  }
+  updateApiKeyStatus();
+  updateAnalyzeBtn();
+}
+
+function saveApiKeyIfChecked() {
+  const key = getApiKey();
+  if (saveApiKeyCheck.checked && key) {
+    localStorage.setItem(API_KEY_STORAGE, key);
+  } else {
+    localStorage.removeItem(API_KEY_STORAGE);
+  }
+  updateApiKeyStatus();
+}
+
+function updateApiKeyStatus() {
+  const key = getApiKey();
+  if (!key) {
+    apiKeyStatus.hidden = true;
+    return;
+  }
+  apiKeyStatus.textContent = '✓ APIキーが設定されています';
+  apiKeyStatus.className = 'apikey-status configured';
+  apiKeyStatus.hidden = false;
+}
+
+apiKeyInput.addEventListener('input', () => {
+  saveApiKeyIfChecked();
+  updateAnalyzeBtn();
+});
+
+saveApiKeyCheck.addEventListener('change', saveApiKeyIfChecked);
+
+toggleApiKeyBtn.addEventListener('click', () => {
+  const isPassword = apiKeyInput.type === 'password';
+  apiKeyInput.type = isPassword ? 'text' : 'password';
+  toggleApiKeyBtn.textContent = isPassword ? '🙈' : '👁';
+});
+
+loadSavedApiKey();
 
 function compressImage(dataUrl) {
   return new Promise((resolve) => {
@@ -232,11 +291,17 @@ function removeImage(id) {
    Analyze Button State
    ===================== */
 function updateAnalyzeBtn() {
-  const has = state.images.length > 0;
-  analyzeBtn.disabled = !has;
-  analyzeHint.textContent = has
-    ? `${state.images.length}枚の写真を解析します`
-    : '写真をアップロードすると解析できます';
+  const hasImages = state.images.length > 0;
+  const hasApiKey = getApiKey().length > 0;
+  analyzeBtn.disabled = !hasImages || !hasApiKey;
+
+  if (!hasApiKey) {
+    analyzeHint.textContent = 'APIキーを入力すると解析できます';
+  } else if (!hasImages) {
+    analyzeHint.textContent = '写真をアップロードすると解析できます';
+  } else {
+    analyzeHint.textContent = `${state.images.length}枚の写真を解析します`;
+  }
 }
 
 /* =====================
@@ -249,6 +314,15 @@ async function analyzeImages() {
     showUploadError('写真をアップロードしてください');
     return;
   }
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    showUploadError('APIキーを入力してください');
+    document.getElementById('section-apikey').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+
+  saveApiKeyIfChecked();
 
   loadingOverlay.hidden = false;
   analyzeBtn.disabled = true;
@@ -265,7 +339,10 @@ async function analyzeImages() {
     // 3. Send to API
     const response = await fetch('/.netlify/functions/analyze', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Anthropic-Api-Key': apiKey,
+      },
       body: JSON.stringify({ images: compressedUrls }),
     });
 
@@ -298,7 +375,7 @@ async function analyzeImages() {
     showUploadError(msg);
   } finally {
     loadingOverlay.hidden = true;
-    analyzeBtn.disabled = state.images.length === 0;
+    updateAnalyzeBtn();
   }
 }
 
@@ -435,7 +512,13 @@ function renderSizeForm(category) {
   const key    = getSizeCategoryKey(category);
   const fields = SIZE_FIELDS[key] || SIZE_FIELDS['その他'];
 
-  form.innerHTML = fields.map(f => {
+  const colorValue = state.analysisData?.color || '';
+  const colorField = `<div class="size-field">
+      <label class="size-label" for="size_color">カラー</label>
+      <input type="text" class="size-input" id="size_color" placeholder="例: ゴールド金具×ブラウン" value="${esc(colorValue)}">
+    </div>`;
+
+  const sizeFields = fields.map(f => {
     // セクションヘッダー（スーツのジャケット/パンツ区切り）
     if (f.section) {
       return `<div class="size-section-label">【${esc(f.section)}】</div>`;
@@ -447,6 +530,8 @@ function renderSizeForm(category) {
       <input type="text" class="size-input" id="size_${f.id}" placeholder="${placeholder}">
     </div>`;
   }).join('');
+
+  form.innerHTML = colorField + sizeFields;
 }
 
 document.getElementById('applySizeBtn').addEventListener('click', applySizeToDescription);
@@ -461,6 +546,12 @@ function applySizeToDescription() {
   const lines         = [];
   let pendingSection  = null;  // まだ出力していないセクションヘッダー
   let hasAnyValue     = false;
+
+  const colorInput = document.getElementById('size_color');
+  if (colorInput && colorInput.value.trim()) {
+    lines.push(`カラー: ${colorInput.value.trim()}`);
+    hasAnyValue = true;
+  }
 
   for (const f of fields) {
     if (f.section) {

@@ -24,6 +24,47 @@
 
     <main class="main">
 
+      <!-- Section 0: API Key -->
+      <section class="card" id="section-apikey">
+        <h2 class="section-title">🔑 APIキー設定</h2>
+        <p class="section-hint">
+          各自のAnthropicアカウントで発行したAPIキーを入力してください。
+          <strong>API利用料はご自身のAnthropicアカウントで課金されます。</strong>
+        </p>
+
+        <div class="apikey-form">
+          <label class="apikey-label" for="apiKeyInput">Anthropic APIキー</label>
+          <div class="apikey-input-row">
+            <input
+              type="password"
+              id="apiKeyInput"
+              class="apikey-input"
+              placeholder="sk-ant-api03-..."
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <button type="button" class="btn btn-secondary btn-sm" id="toggleApiKeyBtn" title="表示/非表示">👁</button>
+          </div>
+          <label class="apikey-save-label">
+            <input type="checkbox" id="saveApiKeyCheck" checked>
+            この端末に保存する（次回以降自動入力）
+          </label>
+        </div>
+
+        <details class="apikey-guide">
+          <summary>APIキーの取得方法</summary>
+          <ol>
+            <li><a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer">Anthropic Console</a> にログイン</li>
+            <li><strong>Plans &amp; Billing</strong> でクレジットを購入</li>
+            <li><strong>API Keys</strong> から新しいキーを発行</li>
+            <li>上の入力欄に貼り付けて保存</li>
+          </ol>
+          <p class="apikey-note">キーはサーバーに保存されません。解析リクエスト時のみ一時的に使用されます。</p>
+        </details>
+
+        <div class="apikey-status" id="apiKeyStatus" hidden></div>
+      </section>
+
       <!-- Section 1: Upload -->
       <section class="card" id="section-upload">
         <h2 class="section-title">① 写真をアップロード</h2>
@@ -73,10 +114,10 @@
 
         <!-- Section 5: Size Form -->
         <section class="card" id="section-size">
-          <h2 class="section-title">⑤ 採寸情報の入力</h2>
-          <p class="section-hint">実際に採寸した値を入力してください（説明文のサイズ欄に反映されます）</p>
+          <h2 class="section-title">⑤ カラー・採寸情報の入力</h2>
+          <p class="section-hint">カラーと実際に採寸した値を入力してください（説明文のサイズ欄に反映されます）</p>
           <div class="size-form" id="sizeForm"></div>
-          <button class="btn btn-secondary" id="applySizeBtn">採寸情報を説明文に反映する</button>
+          <button class="btn btn-secondary" id="applySizeBtn">カラー・採寸情報を説明文に反映する</button>
         </section>
 
         <!-- Section 6: Titles -->

@@ -36,8 +36,11 @@ const ANALYSIS_PROMPT = `あなたはメルカリでブランド品・アパレ�
 ○商品について
 [商品の特徴・魅力を3〜5文で記載。高く売れやすい訴求ポイントを含める]
 
+○素材
+[タグ・刻印・質感などから読み取れる素材を記載する。例:「素材: レザー」。確証が低い場合は「素材: レザー（推定）」のように記載する。タグ等から全く読み取れない場合は「素材はタグにてご確認ください」と記載する]
+
 ○状態
-[状態の詳細を正直に記載。写真で確認できない部分は「写真にてご確認ください」]
+[状態の詳細を正直に記載。写真で確認できない部分は「写真にてご確認ください」。写真から確認できる範囲で目立った傷や汚れが見当たらない場合は、必ず次の文言をそのまま一字一句使用すること（言い換え・追加禁止）：「目立った傷や汚れはありません。気持ちよくご利用いただけます。」実際に傷・汚れ・スレなどが確認できた場合のみ、その内容を正直に具体的に記載する。]
 
 ○サイズ・採寸
 [タグから読み取れる場合は記載。不明な場合は「写真にてご確認ください」]
@@ -60,9 +63,36 @@ const ANALYSIS_PROMPT = `あなたはメルカリでブランド品・アパレ�
 
 const HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Anthropic-Api-Key',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Content-Type': 'application/json',
+};
+
+const getApiKey = (event) => {
+  const headers = event.headers || {};
+  const fromHeader =
+    headers['x-anthropic-api-key'] ||
+    headers['X-Anthropic-Api-Key'];
+  if (fromHeader && typeof fromHeader === 'string' && fromHeader.trim()) {
+    return fromHeader.trim();
+  }
+  // ローカル開発用フォールバック
+  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
+  return null;
+};
+
+const formatApiError = (err) => {
+  const msg = err.message || '';
+  if (msg.includes('credit balance is too low')) {
+    return 'Anthropicのクレジット残高が不足しています。Console の Plans & Billing でクレジットを購入してください。';
+  }
+  if (err.status === 401) {
+    return 'APIキーが無効です。Anthropic Console でキーを確認してください。';
+  }
+  if (err.status === 413) {
+    return '画像容量が大きすぎます。枚数を減らすか、別の写真でお試しください。';
+  }
+  return `エラーが発生しました: ${msg || '不明なエラー'}`;
 };
 
 const VALID_MEDIA_TYPES = new Set([
@@ -85,10 +115,10 @@ export const handler = async (event) => {
   }
 
   try {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = getApiKey(event);
     if (!apiKey) {
-      return reply(500, {
-        error: 'APIキーが設定されていません。Netlifyの環境変数（ANTHROPIC_API_KEY）を確認してください。',
+      return reply(400, {
+        error: 'APIキーが設定されていません。画面上部でAnthropic APIキーを入力してください。',
       });
     }
 
@@ -157,18 +187,13 @@ export const handler = async (event) => {
     return reply(200, { success: true, data: result });
 
   } catch (err) {
-    console.error('analyze error:', err);
+    console.error('analyze error:', err.status || err.name, err.message);
 
     if (err instanceof SyntaxError) {
       return reply(500, { error: 'AI解析結果の解析に失敗しました。もう一度お試しください。' });
     }
-    if (err.status === 401) {
-      return reply(401, { error: 'APIキーが無効です。Netlifyの環境変数を確認してください。' });
-    }
-    if (err.status === 413) {
-      return reply(413, { error: '画像容量が大きすぎます。枚数を減らすか、別の写真でお試しください。' });
-    }
 
-    return reply(500, { error: `エラーが発生しました: ${err.message || '不明なエラー'}` });
+    const status = err.status === 401 ? 401 : err.status === 413 ? 413 : 500;
+    return reply(status, { error: formatApiError(err) });
   }
 };

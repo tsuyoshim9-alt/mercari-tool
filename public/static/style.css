@@ -141,6 +141,103 @@ body {
   margin-top: -6px;
 }
 
+.section-hint strong {
+  color: var(--gray-700);
+}
+
+/* =====================================
+   API Key (BYOK)
+   ===================================== */
+.apikey-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.apikey-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.apikey-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.apikey-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xs);
+  font-size: 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: var(--gray-50);
+  transition: border-color 0.15s;
+}
+
+.apikey-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.apikey-save-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--gray-600);
+  cursor: pointer;
+}
+
+.apikey-guide {
+  font-size: 12.5px;
+  color: var(--gray-600);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+.apikey-guide summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--primary);
+  user-select: none;
+}
+
+.apikey-guide ol {
+  margin: 10px 0 8px 20px;
+  line-height: 1.8;
+}
+
+.apikey-guide a {
+  color: var(--primary);
+}
+
+.apikey-note {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 6px;
+}
+
+.apikey-status {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.apikey-status.configured {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
 /* =====================================
    Drop Zone
    ===================================== */
