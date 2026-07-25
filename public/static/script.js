@@ -512,10 +512,9 @@ function renderSizeForm(category) {
   const key    = getSizeCategoryKey(category);
   const fields = SIZE_FIELDS[key] || SIZE_FIELDS['その他'];
 
-  const colorValue = state.analysisData?.color || '';
   const colorField = `<div class="size-field">
       <label class="size-label" for="size_color">カラー</label>
-      <input type="text" class="size-input" id="size_color" placeholder="例: ゴールド金具×ブラウン" value="${esc(colorValue)}">
+      <input type="text" class="size-input" id="size_color" placeholder="例: ゴールド金具×ブラウン">
     </div>`;
 
   const sizeFields = fields.map(f => {
@@ -585,11 +584,12 @@ function applySizeToDescription() {
   const sizeMarker = '○サイズ・採寸';
 
   if (desc.includes(sizeMarker)) {
-    const start       = desc.indexOf(sizeMarker);
-    const afterHeader = start + sizeMarker.length + 1;
-    const nextSection = desc.indexOf('\n\n○', afterHeader);
-    const end         = nextSection !== -1 ? nextSection : desc.length;
-    desc = desc.slice(0, afterHeader) + sizeText + desc.slice(end);
+    // 見出し直後の中身が空（「○サイズ・採寸」の次がいきなり次の見出し）でも、
+    // 既に実測値が入っていて上書きする場合でも正しく置き換えられるようにする
+    const headerEnd   = desc.indexOf(sizeMarker) + sizeMarker.length;
+    const nextSection = desc.indexOf('\n\n○', headerEnd);
+    const tail        = nextSection !== -1 ? desc.slice(nextSection) : '';
+    desc = desc.slice(0, headerEnd) + '\n' + sizeText + tail;
   } else if (desc.includes('○購入元')) {
     desc = desc.replace('○購入元', `${sizeMarker}\n${sizeText}\n\n○購入元`);
   } else {
