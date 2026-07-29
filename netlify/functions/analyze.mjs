@@ -76,8 +76,9 @@ const getApiKey = (event) => {
   if (fromHeader && typeof fromHeader === 'string' && fromHeader.trim()) {
     return fromHeader.trim();
   }
-  // ローカル開発用フォールバック
-  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
+  // サーバー側の環境変数へのフォールバックはあえて用意しない。
+  // 誰かが画面でキーを入力し忘れても、他人（サイト運営者）のキーで
+  // 課金されることが絶対に起きないようにするため。
   return null;
 };
 
