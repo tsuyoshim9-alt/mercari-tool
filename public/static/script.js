@@ -527,9 +527,13 @@ function renderSizeForm(category) {
   const key    = getSizeCategoryKey(category);
   const fields = SIZE_FIELDS[key] || SIZE_FIELDS['その他'];
 
-  const colorField = `<div class="size-field">
+  const commonFields = `<div class="size-field">
       <label class="size-label" for="size_color">カラー</label>
       <input type="text" class="size-input" id="size_color" placeholder="例: ゴールド金具×ブラウン">
+    </div>
+    <div class="size-field">
+      <label class="size-label" for="size_tag">サイズ表記（タグ記載）</label>
+      <input type="text" class="size-input" id="size_tag" placeholder="例: L / 38 / Mサイズ">
     </div>`;
 
   const sizeFields = fields.map(f => {
@@ -545,7 +549,23 @@ function renderSizeForm(category) {
     </div>`;
   }).join('');
 
-  form.innerHTML = colorField + sizeFields;
+  form.innerHTML = commonFields + sizeFields;
+}
+
+// 説明文中の「○見出し」セクションの中身を置き換える。
+// 中身が元々空（見出しの次がすぐ次の見出し）でも、既に文章が入っていて
+// 上書きする場合でも、後続セクションを壊さずに正しく差し替える。
+function applySectionContent(desc, marker, content) {
+  if (desc.includes(marker)) {
+    const headerEnd   = desc.indexOf(marker) + marker.length;
+    const nextSection = desc.indexOf('\n\n○', headerEnd);
+    const tail        = nextSection !== -1 ? desc.slice(nextSection) : '';
+    return desc.slice(0, headerEnd) + '\n' + content + tail;
+  }
+  if (desc.includes('○購入元')) {
+    return desc.replace('○購入元', `${marker}\n${content}\n\n○購入元`);
+  }
+  return desc + `\n\n${marker}\n${content}`;
 }
 
 document.getElementById('applySizeBtn').addEventListener('click', applySizeToDescription);
@@ -564,9 +584,9 @@ function applySizeToDescription() {
   let pendingSection  = null;  // まだ出力していないセクションヘッダー
   let hasAnyValue     = false;
 
-  const colorInput = document.getElementById('size_color');
-  if (colorInput && colorInput.value.trim()) {
-    lines.push(`カラー: ${colorInput.value.trim()}`);
+  const tagSizeInput = document.getElementById('size_tag');
+  if (tagSizeInput && tagSizeInput.value.trim()) {
+    lines.push(`サイズ表記: ${tagSizeInput.value.trim()}`);
     hasAnyValue = true;
   }
 
@@ -592,26 +612,21 @@ function applySizeToDescription() {
     lines.push(`${f.label}: ${val}${suffix}`);
   }
 
+  const colorInput = document.getElementById('size_color');
+  const colorValue = colorInput ? colorInput.value.trim() : '';
+  if (colorValue) hasAnyValue = true;
+
   if (!hasAnyValue) {
-    alert('採寸情報を入力してください');
+    alert('カラーまたは採寸情報を入力してください');
     return;
   }
 
   let desc = descriptionArea.value;
-  const sizeText   = lines.join('\n');
-  const sizeMarker = '○サイズ・採寸';
-
-  if (desc.includes(sizeMarker)) {
-    // 見出し直後の中身が空（「○サイズ・採寸」の次がいきなり次の見出し）でも、
-    // 既に実測値が入っていて上書きする場合でも正しく置き換えられるようにする
-    const headerEnd   = desc.indexOf(sizeMarker) + sizeMarker.length;
-    const nextSection = desc.indexOf('\n\n○', headerEnd);
-    const tail        = nextSection !== -1 ? desc.slice(nextSection) : '';
-    desc = desc.slice(0, headerEnd) + '\n' + sizeText + tail;
-  } else if (desc.includes('○購入元')) {
-    desc = desc.replace('○購入元', `${sizeMarker}\n${sizeText}\n\n○購入元`);
-  } else {
-    desc += `\n\n${sizeMarker}\n${sizeText}`;
+  if (lines.length > 0) {
+    desc = applySectionContent(desc, '○サイズ・採寸', lines.join('\n'));
+  }
+  if (colorValue) {
+    desc = applySectionContent(desc, '○カラー', colorValue);
   }
 
   descriptionArea.value = desc;
