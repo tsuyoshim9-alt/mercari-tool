@@ -386,7 +386,7 @@ function displayResults(data) {
   resultsSection.hidden = false;
 
   renderCategoryInfo(data);
-  renderSizeForm(data.category || '');
+  renderSizeForm(`${data.category || ''} ${data.item_name || ''}`);
   renderTitles(data.titles || []);
   renderKeywords(data.keywords || []);
 
@@ -493,6 +493,19 @@ const SIZE_FIELDS = {
     { id: 'inseam', label: '股下',    unit: 'cm' },
     { id: 'hem',    label: '裾幅',    unit: 'cm' },
   ],
+  'スカート': [
+    { id: 'waist',  label: 'ウエスト', unit: 'cm' },
+    { id: 'hip',    label: 'ヒップ',   unit: 'cm' },
+    { id: 'length', label: '丈',       unit: 'cm' },
+    { id: 'hem',    label: '裾周り',   unit: 'cm' },
+  ],
+  'ワンピース': [
+    { id: 'shoulder', label: '肩幅',     unit: 'cm' },
+    { id: 'bust',     label: 'バスト',   unit: 'cm' },
+    { id: 'waist',    label: 'ウエスト', unit: 'cm' },
+    { id: 'length',   label: '着丈',     unit: 'cm' },
+    { id: 'sleeve',   label: '袖丈',     unit: 'cm' },
+  ],
   'その他': [
     { id: 'note', label: 'サイズメモ', unit: '' },
   ],
@@ -502,8 +515,10 @@ function getSizeCategoryKey(category) {
   if (!category) return 'その他';
   if (/バッグ|ポーチ|財布|クラッチ/.test(category)) return 'バッグ';
   if (/スーツ|セットアップ/.test(category)) return 'スーツ';
-  if (/上着|ジャケット|コート|ブルゾン|アウター|カーディガン|パーカー/.test(category)) return '上着';
+  if (/上着|ジャケット|コート|ブルゾン|アウター|カーディガン|パーカー|Tシャツ|シャツ|カットソー|ニット|セーター|トップス|ブラウス|スウェット|トレーナー/.test(category)) return '上着';
   if (/パンツ|スラックス|ボトム|デニム/.test(category)) return 'パンツ';
+  if (/スカート/.test(category)) return 'スカート';
+  if (/ワンピース|ドレス/.test(category)) return 'ワンピース';
   return 'その他';
 }
 
@@ -537,9 +552,12 @@ document.getElementById('applySizeBtn').addEventListener('click', applySizeToDes
 
 function applySizeToDescription() {
   // SIZE_FIELDS から直接構造を読み取り、セクションヘッダーも含めて整形する
-  const currentCategory = state.analysisData?.category ||
-                          document.getElementById('field_category')?.value || '';
-  const catKey = getSizeCategoryKey(currentCategory);
+  // renderSizeForm と同じ判定基準（カテゴリ＋商品名）を使い、表示中のフィールドと一致させる
+  const currentCategory = document.getElementById('field_category')?.value ||
+                          state.analysisData?.category || '';
+  const currentItemName = document.getElementById('field_item_name')?.value ||
+                          state.analysisData?.item_name || '';
+  const catKey = getSizeCategoryKey(`${currentCategory} ${currentItemName}`);
   const fields = SIZE_FIELDS[catKey] || SIZE_FIELDS['その他'];
 
   const lines         = [];
