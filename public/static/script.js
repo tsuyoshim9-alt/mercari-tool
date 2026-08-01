@@ -369,7 +369,10 @@ async function analyzeImages() {
     displayResults(result.data);
 
   } catch (err) {
-    const msg = (err.name === 'TypeError' && err.message.includes('fetch'))
+    // fetch失敗はブラウザによってエラー内容が異なる（Chrome: 「Failed to fetch」、
+    // Safari/WebKit: 中身のない「Type error」）。try内はfetch関連の処理のみなので、
+    // TypeErrorはメッセージ内容を問わず通信エラーとして扱う。
+    const msg = (err.name === 'TypeError')
       ? '通信エラーが発生しました。インターネット接続を確認してください。'
       : (err.message || 'AI解析に失敗しました。もう一度お試しください。');
     showUploadError(msg);
