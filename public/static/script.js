@@ -34,7 +34,7 @@ const descCharCount   = document.getElementById('descCharCount');
    ===================== */
 const MAX_LONG_EDGE = 1024;
 const JPEG_QUALITY  = 0.75;
-const MAX_API_IMGS  = 8;
+const MAX_API_IMGS  = 5;
 const API_KEY_STORAGE = 'anthropic_api_key';
 
 /* =====================
@@ -375,15 +375,20 @@ async function analyzeImages() {
 
     const compressedUrls = selected.map(img => img.compressedDataUrl);
 
-    // 3. Send to API（ゲートウェイエラーのみ1回だけ自動再試行）
+    // 3. Send to API（ゲートウェイエラーのみ自動再試行。初回＋最大2回）
+    const MAX_ATTEMPTS = 3;
     let data;
-    try {
-      data = await requestAnalysis(apiKey, compressedUrls);
-    } catch (err) {
-      if (!(err instanceof GatewayError)) throw err;
-      if (loadingSub) loadingSub.textContent = '一時的なエラーのため再試行しています...';
-      await new Promise(r => setTimeout(r, 1500));
-      data = await requestAnalysis(apiKey, compressedUrls);
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        data = await requestAnalysis(apiKey, compressedUrls);
+        break;
+      } catch (err) {
+        if (!(err instanceof GatewayError) || attempt === MAX_ATTEMPTS) throw err;
+        if (loadingSub) {
+          loadingSub.textContent = `一時的なエラーのため再試行しています...（${attempt}/${MAX_ATTEMPTS - 1}回目）`;
+        }
+        await new Promise(r => setTimeout(r, 1500));
+      }
     }
 
     state.analysisData = data;
