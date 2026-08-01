@@ -309,6 +309,42 @@ function updateAnalyzeBtn() {
    ===================== */
 analyzeBtn.addEventListener('click', analyzeImages);
 
+// Netlifyのゲートウェイタイムアウト（504等）はJSONではなくHTML/空応答が返る。
+// 一時的な混雑が原因のことが多く、自動で1回だけ再試行すれば成功することが多い。
+class GatewayError extends Error {}
+
+async function requestAnalysis(apiKey, images) {
+  const response = await fetch('/.netlify/functions/analyze', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Anthropic-Api-Key': apiKey,
+    },
+    body: JSON.stringify({ images }),
+  });
+
+  // Check content-type before JSON.parse (HTML = Function not found or crashed)
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    if (response.status === 404) {
+      throw new Error('AI解析機能が見つかりません（404）。Netlifyの再デプロイをお試しください。');
+    }
+    throw new GatewayError(`サーバーエラーが発生しました（${response.status}）。しばらくしてからお試しください。`);
+  }
+
+  if (response.status === 413) {
+    throw new Error('画像容量が大きすぎます。枚数を減らすか、別の写真でお試しください。');
+  }
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || 'AI解析に失敗しました');
+  }
+
+  return result.data;
+}
+
 async function analyzeImages() {
   if (state.images.length === 0) {
     showUploadError('写真をアップロードしてください');
@@ -327,6 +363,9 @@ async function analyzeImages() {
   loadingOverlay.hidden = false;
   analyzeBtn.disabled = true;
 
+  const loadingSub    = loadingOverlay.querySelector('.loading-sub');
+  const loadingSubText = loadingSub ? loadingSub.textContent : '';
+
   try {
     // 1. Select up to MAX_API_IMGS images
     const selected = selectImagesForAPI(state.images, MAX_API_IMGS);
@@ -336,37 +375,19 @@ async function analyzeImages() {
 
     const compressedUrls = selected.map(img => img.compressedDataUrl);
 
-    // 3. Send to API
-    const response = await fetch('/.netlify/functions/analyze', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Anthropic-Api-Key': apiKey,
-      },
-      body: JSON.stringify({ images: compressedUrls }),
-    });
-
-    // 4. Check content-type before JSON.parse (HTML = Function not found or crashed)
-    const contentType = response.headers.get('content-type') || '';
-    if (!contentType.includes('application/json')) {
-      if (response.status === 404) {
-        throw new Error('AI解析機能が見つかりません（404）。Netlifyの再デプロイをお試しください。');
-      }
-      throw new Error(`サーバーエラーが発生しました（${response.status}）。しばらくしてからお試しください。`);
+    // 3. Send to API（ゲートウェイエラーのみ1回だけ自動再試行）
+    let data;
+    try {
+      data = await requestAnalysis(apiKey, compressedUrls);
+    } catch (err) {
+      if (!(err instanceof GatewayError)) throw err;
+      if (loadingSub) loadingSub.textContent = '一時的なエラーのため再試行しています...';
+      await new Promise(r => setTimeout(r, 1500));
+      data = await requestAnalysis(apiKey, compressedUrls);
     }
 
-    if (response.status === 413) {
-      throw new Error('画像容量が大きすぎます。枚数を減らすか、別の写真でお試しください。');
-    }
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || 'AI解析に失敗しました');
-    }
-
-    state.analysisData = result.data;
-    displayResults(result.data);
+    state.analysisData = data;
+    displayResults(data);
 
   } catch (err) {
     // fetch失敗はブラウザによってエラー内容が異なる（Chrome: 「Failed to fetch」、
@@ -377,6 +398,7 @@ async function analyzeImages() {
       : (err.message || 'AI解析に失敗しました。もう一度お試しください。');
     showUploadError(msg);
   } finally {
+    if (loadingSub) loadingSub.textContent = loadingSubText;
     loadingOverlay.hidden = true;
     updateAnalyzeBtn();
   }
