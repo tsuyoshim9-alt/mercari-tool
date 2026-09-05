@@ -453,15 +453,35 @@ const CONDITIONS = [
   '傷や汚れあり',
 ];
 
+// 時計は状態を S〜F のランクで表す（出品テンプレート側のランク表と対応）
+const WATCH_CONDITIONS = [
+  { value: 'S', label: 'S（新古・未使用品）' },
+  { value: 'A', label: 'A（数回使用程度の美品）' },
+  { value: 'B', label: 'B（多少の傷み・汚れがあるが程度良好の良品）' },
+  { value: 'C', label: 'C（傷み・汚れがある、一般的な使用感のあるお品）' },
+  { value: 'D', label: 'D（使用できるが、傷み・汚れが多く見受けられるお品）' },
+  { value: 'F', label: 'F（ジャンク品・使用不可）' },
+];
+
+function isWatchCategory(category) {
+  return /時計|ウォッチ|watch/i.test(category || '');
+}
+
 function renderCategoryInfo(data) {
   const grid = document.getElementById('categoryGrid');
+  const watch = isWatchCategory(data.category);
 
   grid.innerHTML = FIELD_CONFIG.map(f => {
     const val  = data[f.key] || '';
     const wide = f.type === 'textarea' ? ' info-field-wide' : '';
 
     let input;
-    if (f.type === 'select') {
+    if (f.type === 'select' && watch) {
+      const opts = WATCH_CONDITIONS.map(c =>
+        `<option value="${esc(c.value)}" ${val === c.value ? 'selected' : ''}>${esc(c.label)}</option>`
+      ).join('');
+      input = `<select class="field-input" id="field_${f.key}" onchange="patchField('${f.key}', this.value)">${opts}</select>`;
+    } else if (f.type === 'select') {
       const opts = CONDITIONS.map(c =>
         `<option value="${esc(c)}" ${val === c ? 'selected' : ''}>${esc(c)}</option>`
       ).join('');
@@ -536,6 +556,12 @@ const SIZE_FIELDS = {
     { id: 'length',   label: '着丈',     unit: 'cm' },
     { id: 'sleeve',   label: '袖丈',     unit: 'cm' },
   ],
+  '時計': [
+    { id: 'case_size', label: 'ケースサイズ', unit: 'mm' },
+    { id: 'wrist',     label: '腕周り',       unit: 'cm' },
+    { id: 'weight',    label: '重さ',         unit: 'g' },
+    { id: 'accessory', label: '付属品',       unit: '' },
+  ],
   'その他': [
     { id: 'note', label: 'サイズメモ', unit: '' },
   ],
@@ -543,6 +569,7 @@ const SIZE_FIELDS = {
 
 function getSizeCategoryKey(category) {
   if (!category) return 'その他';
+  if (isWatchCategory(category)) return '時計';
   if (/バッグ|ポーチ|財布|クラッチ/.test(category)) return 'バッグ';
   if (/スーツ|セットアップ/.test(category)) return 'スーツ';
   if (/上着|ジャケット|コート|ブルゾン|アウター|カーディガン|パーカー|Tシャツ|シャツ|カットソー|ニット|セーター|トップス|ブラウス|スウェット|トレーナー/.test(category)) return '上着';
@@ -598,6 +625,64 @@ function applySectionContent(desc, marker, content) {
   return desc + `\n\n${marker}\n${content}`;
 }
 
+// 時計テンプレートの「【ラベル / 】」の "/" の直後に値を差し込む。
+// 見出しがユニークな限り、ラベルの後ろにある単位表記（mm・cm・g など）を壊さずに残せる。
+function applyBracketValue(desc, label, value) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp('(【\\s*' + escaped + '\\s*/\\s*)');
+  const m = desc.match(re);
+  if (!m) return desc;
+  const insertAt = m.index + m[0].length;
+  return desc.slice(0, insertAt) + value + ' ' + desc.slice(insertAt);
+}
+
+// 時計テンプレートの「-色-」直後（※1枚目の写真が…の直前）に色名を差し込む
+function applyWatchColor(desc, color) {
+  const marker = '-色-';
+  const noteMarker = '※1枚目の写真が現物に最も近い色味です。';
+  const startIdx = desc.indexOf(marker);
+  const noteIdx  = desc.indexOf(noteMarker);
+  if (startIdx === -1 || noteIdx === -1 || noteIdx < startIdx) return desc;
+  const afterMarker = startIdx + marker.length;
+  return desc.slice(0, afterMarker) + '\n' + color + '\n\n' + desc.slice(noteIdx);
+}
+
+const WATCH_SIZE_LABELS = {
+  case_size: 'ケースサイズ',
+  wrist:     '腕周り',
+  weight:    '重さ',
+  accessory: '付属品',
+};
+
+function applyWatchSizeToDescription() {
+  let desc = descriptionArea.value;
+  let hasAnyValue = false;
+
+  for (const [id, label] of Object.entries(WATCH_SIZE_LABELS)) {
+    const input = document.getElementById(`size_${id}`);
+    if (!input || !input.value.trim()) continue;
+    hasAnyValue = true;
+    desc = applyBracketValue(desc, label, input.value.trim());
+  }
+
+  const colorInput = document.getElementById('size_color');
+  const colorValue = colorInput ? colorInput.value.trim() : '';
+  if (colorValue) {
+    hasAnyValue = true;
+    desc = applyWatchColor(desc, colorValue);
+  }
+
+  if (!hasAnyValue) {
+    alert('カラーまたは採寸情報を入力してください');
+    return;
+  }
+
+  descriptionArea.value = desc;
+  updateCharCount();
+  descriptionArea.classList.add('flash-update');
+  setTimeout(() => descriptionArea.classList.remove('flash-update'), 600);
+}
+
 document.getElementById('applySizeBtn').addEventListener('click', applySizeToDescription);
 
 function applySizeToDescription() {
@@ -608,6 +693,13 @@ function applySizeToDescription() {
   const currentItemName = document.getElementById('field_item_name')?.value ||
                           state.analysisData?.item_name || '';
   const catKey = getSizeCategoryKey(`${currentCategory} ${currentItemName}`);
+
+  // 時計は「○見出し」ではなく「【ラベル / 】」形式のテンプレートなので専用ロジックで反映する
+  if (catKey === '時計') {
+    applyWatchSizeToDescription();
+    return;
+  }
+
   const fields = SIZE_FIELDS[catKey] || SIZE_FIELDS['その他'];
 
   const lines         = [];
