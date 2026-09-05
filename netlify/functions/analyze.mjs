@@ -1,26 +1,64 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-const WATCH_TEMPLATE = `【商品】
-（ブランド名・モデル名・型番を要約した商品名。例: ROLEX デイトナ 116500LN）
+// 時計の説明文は「AIに丸ごと自由生成させる」のではなく、
+// 定型部分（■購入場所・■備考・ランク表など）をコード側で固定し、
+// AIには写真から読み取れる項目（ブランド・型番・サイズ等）だけを埋めさせる。
+// → モデルがフォーマット指示を無視／崩して出力する事故を防ぐため。
+function isWatchCategory(category) {
+  return /時計|ウォッチ|watch/i.test(category || '');
+}
+
+function cleanField(v) {
+  const s = (v == null ? '' : String(v)).trim();
+  // 「不明」「確認不可」等のプレースホルダーは空欄として扱う
+  if (!s || /^(不明|確認不可|なし|特になし|特記事項なし|-|ー)$/.test(s)) return '';
+  return s;
+}
+
+// 「【ラベル / 値 】」の1行を作る。値が空なら「【ラベル / 】」（テンプレートの空欄と同じ見た目）にする
+function bracketLine(label, value) {
+  return value ? `【${label} / ${value} 】` : `【${label} / 】`;
+}
+
+function buildWatchDescription(r) {
+  const itemName = cleanField(r.watch_item_name) ||
+    [cleanField(r.brand), cleanField(r.item_name), cleanField(r.model_number)].filter(Boolean).join(' ');
+  const rankRaw = cleanField(r.condition).toUpperCase();
+  const rank = /^[SABCDF]$/.test(rankRaw) ? rankRaw : '';
+  const brand = cleanField(r.brand);
+  const model = cleanField(r.model_number);
+  const material = cleanField(r.material) || 'SS / ステンレス';
+  const dial = cleanField(r.watch_dial);
+  const movement = cleanField(r.watch_movement) || 'クォーツ / quartz';
+  const caseSize = cleanField(r.watch_case_size).replace(/mm$/i, '').trim();
+  const wrist = cleanField(r.watch_wrist).replace(/cm$/i, '').trim();
+  const accessories = cleanField(r.watch_accessories);
+  const weight = cleanField(r.watch_weight).replace(/g$/i, '').trim();
+  const waterResist = cleanField(r.watch_water_resist) || '日常生活防水';
+  const func = cleanField(r.watch_function);
+  const color = cleanField(r.color);
+
+  return `【商品】
+${itemName}
 
 -ランク-
-（写真から判断した状態を S・A・B・C・D・F のいずれか1文字で）
+${rank}
 
-【ブランド / / / 】
-【型番 / 】
-【素材 / SS / ステンレス 】
-【文字盤 / 】
-【ムーブメント / クォーツ / quartz 】
-【ケースサイズ / mm 】
-【腕周り / cm 】
-【付属品 / 】
-【重さ / g 】
+【ブランド /${brand ? ' ' + brand : ''} / / 】
+${bracketLine('型番', model)}
+${bracketLine('素材', material)}
+${bracketLine('文字盤', dial)}
+${bracketLine('ムーブメント', movement)}
+${bracketLine('ケースサイズ', caseSize ? caseSize + 'mm' : '')}
+${bracketLine('腕周り', wrist ? wrist + 'cm' : '')}
+${bracketLine('付属品', accessories)}
+${bracketLine('重さ', weight ? weight + 'g' : '')}
 
-【防水 / 日常生活防水 】
-【機能 / 】
+${bracketLine('防水', waterResist)}
+${bracketLine('機能', func)}
 
 -色-
-（主な色を記載）
+${color}
 
 ※1枚目の写真が現物に最も近い色味です。
 
@@ -55,6 +93,7 @@ AACD加盟店、各ストアにて購入いたしました。
 お伝えしておりますが、特性上全ての商品状態を
 お伝えすることが難しくなっております。
 ご不明な点がございましたらお気軽にご質問下さい。`;
+}
 
 const ANALYSIS_PROMPT = `あなたはメルカリでブランド品・アパレル・時計を販売するエキスパートです。
 提供された商品写真を詳細に解析し、以下の構造でJSONのみを返してください。
@@ -65,17 +104,26 @@ const ANALYSIS_PROMPT = `あなたはメルカリでブランド品・アパレ�
   "brand": "ブランド名（不確かなら「推定: ○○」、不明なら「不明」）",
   "item_name": "具体的なアイテム名（例: ショルダーバッグ、テーラードジャケット、腕時計）",
   "color": "主な色（複数なら「ブラック×ゴールド」のように記載）",
-  "material": "素材（不確かなら「レザー（要確認）」のように記載）",
+  "material": "素材（不確かなら「レザー（要確認）」のように記載。時計でSS/ステンレス以外の素材が確認できなければ空文字でよい）",
   "pattern": "柄・デザイン（例: 無地、ストライプ、モノグラム。時計の場合は空文字でよい）",
   "features": ["デザインの特徴1", "特徴2", "特徴3"],
-  "condition": "categoryが「時計」以外なら 新品同様・未使用に近い・目立った傷や汚れなし・やや傷や汚れあり・傷や汚れあり から選択。categoryが「時計」なら S・A・B・C・D・F のいずれか1文字（下記ランク基準を参照）",
+  "condition": "categoryが「時計」以外なら 新品同様・未使用に近い・目立った傷や汚れなし・やや傷や汚れあり・傷や汚れあり から選択。categoryが「時計」なら S・A・B・C・D・F のいずれか1文字のみ（S=新古未使用品、A=数回使用程度の美品、B=多少の傷み汚れがあるが程度良好、C=傷み汚れがある一般的な使用感、D=傷み汚れが多い、F=ジャンク品）",
   "damage": "傷・汚れ・スレ・使用感の詳細（写真から確認できる範囲で正直に記載。なければ「写真から確認できる範囲では目立ったダメージなし」）",
-  "model_number": "型番・品番・タグ情報（読み取れれば記載、不明なら「確認不可」）",
+  "model_number": "型番・品番・タグ情報（読み取れれば記載、不明なら空文字）",
   "hardware": "ロゴ・刻印・金具・ファスナーなどの特徴（なければ「特記事項なし」）",
   "keywords": ["キーワード1", "キーワード2", "キーワード3"],
   "selling_points": ["訴求ポイント1", "訴求ポイント2", "訴求ポイント3"],
   "titles": ["タイトル案1", "タイトル案2", "タイトル案3"],
-  "description": "（後述のフォーマットで作成した商品説明文。categoryが「時計」かどうかでフォーマットが変わる）"
+  "watch_item_name": "categoryが「時計」のときだけ使用。商品名を1行で要約（例: ROLEX デイトナ 116500LN）。時計以外なら空文字",
+  "watch_dial": "categoryが「時計」のときだけ使用。文字盤の色・特徴。時計以外なら空文字",
+  "watch_movement": "categoryが「時計」のときだけ使用。ムーブメント（例: クォーツ / quartz、自動巻き / automatic）。確認できなければ空文字",
+  "watch_case_size": "categoryが「時計」のときだけ使用。ケースサイズの数値のみ（単位mmは付けない、例: 37）。不明なら空文字",
+  "watch_wrist": "categoryが「時計」のときだけ使用。腕周り・バンド長さの数値のみ（単位cmは付けない）。不明なら空文字",
+  "watch_accessories": "categoryが「時計」のときだけ使用。付属品（箱・保証書等、写真で確認できたもの）。無ければ空文字",
+  "watch_weight": "categoryが「時計」のときだけ使用。重さの数値のみ（単位gは付けない）。不明なら空文字",
+  "watch_water_resist": "categoryが「時計」のときだけ使用。防水性能（例: 日常生活防水、100m防水）。確認できなければ空文字",
+  "watch_function": "categoryが「時計」のときだけ使用。機能（例: クロノグラフ、デイト表示、GMT）。無ければ空文字",
+  "description": "categoryが「時計」以外の商品についてのみ、後述のフォーマットで作成した商品説明文。categoryが「時計」の場合はこのフィールドは空文字でよい（時計の説明文はコード側で組み立てるため）"
 }
 
 タイトル要件:
@@ -87,8 +135,7 @@ const ANALYSIS_PROMPT = `あなたはメルカリでブランド品・アパレ�
 - 10〜15個
 - 写真で確認できるものは確定表記、不確かなものは末尾に「（候補）」を付ける
 
----
-■ categoryが「時計」以外の場合の説明文フォーマット（必ずこの形式で）:
+説明文フォーマット（categoryが「時計」以外の場合のみ・必ずこの形式で）:
 ○商品について
 [商品の特徴・魅力を3〜5文で記載。高く売れやすい訴求ポイントを含める]
 
@@ -113,23 +160,11 @@ const ANALYSIS_PROMPT = `あなたはメルカリでブランド品・アパレ�
 中古品のため、写真に写りきらない細かな傷や汚れがある場合がございます。
 状態は写真をご確認いただき、ご不明点は購入前にコメントください。
 
----
-■ categoryが「時計」の場合の説明文フォーマット（必ずこのテンプレートをそのまま使い、空欄と【商品】【ランク】のみ写真から判断して埋める。
-　■購入場所・■備考・■備考〜商品について〜、および【状態】のランク一覧（S〜F）は一字一句変更せずそのまま含めること）:
-
-${WATCH_TEMPLATE}
-
-時計テンプレートの埋め方:
-- 【商品】には要約した商品名を1行で記載する
-- -ランク- の下には S・A・B・C・D・F のいずれか1文字だけを記載する（判定基準は【状態】の一覧を使う）
-- 【ブランド / 】【型番 / 】【文字盤 / 】【腕周り / 】【付属品 / 】【重さ / 】【機能 / 】は、写真から確認できた内容だけを "/" の後ろに記載する。確認できない場合は空欄のままにする（無理に推測や断定をしない）
-- 【素材 / SS / ステンレス 】【ムーブメント / クォーツ / quartz 】【ケースサイズ / 　mm 】【防水 / 日常生活防水 】は、写真やタグから読み取れた場合はその内容に書き換え、読み取れない場合はテンプレートの例（SS / ステンレス、クォーツ / quartz、日常生活防水）をそのまま残してよい
-- -色- の下の行には主な色（1色）を記載する
-
 重要な制約:
-- 写真から断定できない情報は「写真から確認できる範囲では〜」と表現する（時計テンプレートの空欄は上記の埋め方ルールを優先する）
-- ブランド名・型番など確証が低い場合は「推定:」「要確認」を必ず明記する（時計テンプレートの項目を除く）
-- 確認できないキーワードを説明文に断定で入れないこと`;
+- 写真から断定できない情報は「写真から確認できる範囲では〜」と表現する
+- ブランド名・型番など確証が低い場合は「推定:」「要確認」を必ず明記する
+- 確認できないキーワードを説明文に断定で入れないこと
+- categoryが「時計」の場合、watch_で始まるフィールドと condition（ランク1文字）を正確に埋めることに集中し、description フィールドには何も書かない（空文字にする）`;
 
 const HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -255,6 +290,12 @@ export const handler = async (event) => {
     if (s !== -1 && e !== -1) resultText = resultText.slice(s, e + 1);
 
     const result = JSON.parse(resultText);
+
+    // 時計は説明文をコード側で組み立て、AIのフォーマット崩れの影響を受けないようにする
+    if (isWatchCategory(result.category)) {
+      result.description = buildWatchDescription(result);
+    }
+
     return reply(200, { success: true, data: result });
 
   } catch (err) {
