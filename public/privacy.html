@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>プライバシーポリシー｜メルカリ出品文 自動生成</title>
+<style>
+  body {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+    font-family: "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+    font-size: 15px;
+    line-height: 1.9;
+    color: #1f2937;
+  }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .updated { color: #6b7280; font-size: 13px; margin-bottom: 28px; }
+  h2 {
+    font-size: 17px;
+    margin: 32px 0 8px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+  ul { padding-left: 22px; }
+  li { margin: 6px 0; }
+  .note {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 16px 0;
+  }
+  a { color: #2563eb; }
+  footer { margin-top: 40px; color: #6b7280; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>プライバシーポリシー</h1>
+<div class="updated">Chrome拡張機能「メルカリ出品文 自動生成」／最終更新: 2026年9月14日</div>
+
+<p>
+本拡張機能（以下「本拡張」）は、メルカリの出品編集画面において、利用者が追加した商品写真をもとに
+出品タイトル案と商品説明文を生成し、入力欄へ反映するツールです。本ポリシーは、本拡張が取り扱う情報と
+その取り扱い方針を説明するものです。
+</p>
+
+<div class="note">
+  <strong>本拡張の開発者は、利用者の個人情報・商品情報・APIキーを一切収集しません。</strong>
+  開発者が運用するサーバーへ利用者のデータが送信されることはありません。
+</div>
+
+<h2>1. 取り扱う情報</h2>
+<ul>
+  <li><strong>商品写真</strong>… 利用者がメルカリの出品画面に追加した写真を、説明文を生成するために読み取ります（最大5枚）。</li>
+  <li><strong>出品の下書き文</strong>… 利用者がすでに入力している説明文がある場合、サイズ・採寸の情報を引き継ぐために読み取ります。</li>
+  <li><strong>Anthropic APIキー</strong>… 利用者ご自身が取得し、本拡張の設定画面に入力したものです。</li>
+</ul>
+
+<h2>2. 情報の送信先</h2>
+<p>
+上記の商品写真および下書き文は、説明文を生成する目的でのみ、
+<a href="https://www.anthropic.com/" target="_blank" rel="noopener">Anthropic PBC</a> が提供する
+Claude API（<code>api.anthropic.com</code>）へ送信されます。送信は利用者が「AIで生成」ボタンを押した時にのみ行われ、
+利用者ご自身のAPIキーを用いて、利用者ご自身のアカウントから実行されます。
+</p>
+<p>
+送信されたデータの取り扱いについては、Anthropic社の
+<a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">プライバシーポリシー</a>
+および
+<a href="https://www.anthropic.com/legal/commercial-terms" target="_blank" rel="noopener">利用規約</a>
+が適用されます。
+</p>
+<p>
+このほか、本拡張は文面テンプレート（説明文の書式定義）を GitHub 上の公開ファイルから取得します。
+この通信で利用者の情報が送信されることはありません。
+</p>
+
+<h2>3. 情報の保存場所</h2>
+<ul>
+  <li><strong>APIキー</strong>… 利用者のブラウザ内（Chromeのローカルストレージ）にのみ保存されます。外部へ送信されるのは、上記のClaude APIへのリクエスト時のヘッダーとしてのみです。</li>
+  <li><strong>文面テンプレート</strong>… 取得したテンプレートをブラウザ内に一時保存します。個人情報は含みません。</li>
+  <li><strong>商品写真・下書き文</strong>… 本拡張が保存することはありません。生成処理のために一時的に読み取るのみです。</li>
+</ul>
+
+<h2>4. 第三者への提供・販売</h2>
+<p>
+本拡張は、利用者の情報を開発者や第三者へ提供・販売・譲渡しません。
+広告配信、アクセス解析、行動追跡は一切行いません。
+</p>
+
+<h2>5. 利用者による削除</h2>
+<p>
+設定画面でAPIキーを空欄にして保存すると、保存済みのキーは削除されます。
+また、Chromeから本拡張をアンインストールすると、本拡張がブラウザ内に保存したすべてのデータが削除されます。
+</p>
+
+<h2>6. 動作するページ</h2>
+<p>
+本拡張が読み取りを行うのは <code>https://jp.mercari.com/sell/</code> で始まる出品編集画面のみです。
+その他のウェブサイトの閲覧内容を取得することはありません。
+</p>
+
+<h2>7. 本ポリシーの変更</h2>
+<p>
+本ポリシーを変更する場合は、本ページの内容および最終更新日を更新します。
+</p>
+
+<h2>8. お問い合わせ</h2>
+<p>
+本拡張およびプライバシーに関するお問い合わせは、配布元よりご連絡ください。
+</p>
+
+<footer>メルカリ出品文 自動生成</footer>
+
+</body>
+</html>
