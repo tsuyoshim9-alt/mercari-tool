@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>プライバシーポリシー｜利益商品ファインダー（スーツ）</title>
+<style>
+  body {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+    font-family: "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+    font-size: 15px;
+    line-height: 1.9;
+    color: #1f2937;
+  }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .updated { color: #6b7280; font-size: 13px; margin-bottom: 28px; }
+  h2 {
+    font-size: 17px;
+    margin: 32px 0 8px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+  ul { padding-left: 22px; }
+  li { margin: 6px 0; }
+  .note {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 16px 0;
+  }
+  a { color: #2563eb; }
+  code {
+    background: #f3f4f6;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  footer { margin-top: 40px; color: #6b7280; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>プライバシーポリシー</h1>
+<div class="updated">Chrome拡張機能「利益商品ファインダー（スーツ）」／最終更新: 2026年9月14日</div>
+
+<p>
+本拡張機能（以下「本拡張」）は、利用者が閲覧しているフリマ・オークションサイトの画面を解析し、
+ブランドスーツの割安な出品を見つけて画面上に表示するツールです。
+本ポリシーは、本拡張が取り扱う情報とその取り扱い方針を説明するものです。
+</p>
+
+<div class="note">
+  <strong>本拡張の開発者は、利用者の個人情報・閲覧履歴・APIキーを一切収集しません。</strong>
+  開発者が運用するサーバーへ利用者のデータが送信されることはありません。
+  広告配信、アクセス解析、行動追跡は一切行いません。
+</div>
+
+<h2>1. 動作するページ</h2>
+<p>本拡張が動作するのは、次の3サイトのページのみです。それ以外のウェブサイトの閲覧内容を取得することはありません。</p>
+<ul>
+  <li><code>jp.mercari.com</code>（メルカリ）</li>
+  <li><code>auctions.yahoo.co.jp</code> / <code>page.auctions.yahoo.co.jp</code>（ヤフオク）</li>
+  <li><code>www.ecoauc.com</code>（エコリング／会員制オークション）</li>
+</ul>
+
+<h2>2. 読み取る情報</h2>
+<ul>
+  <li><strong>閲覧中ページの商品情報</strong>… 利用者が開いている検索結果・商品ページから、商品名・価格・商品説明・写真・ランク等を読み取り、利益判定の計算に使用します。計算はすべて利用者のブラウザ内で行われます。</li>
+  <li><strong>利用者の設定</strong>… 最低利益額、対象ブランド、有効にするサイト等、利用者が設定画面で入力した値。</li>
+  <li><strong>Anthropic APIキー（任意）</strong>… 後述の「写真で状態を判定」機能を使う場合にのみ、利用者ご自身が入力するものです。</li>
+</ul>
+
+<h2>3. 相場を調べるためのバックグラウンドタブについて</h2>
+<p>
+本拡張は、想定売値の精度を上げるため、<strong>メルカリの「売り切れ」検索結果を自動で参照します</strong>。
+具体的には、バックグラウンドに表示されないタブを一時的に開き、
+メルカリの検索ページ（<code>jp.mercari.com/search</code>）を読み込んで、
+売れた商品の名称・価格・リンクを収集したうえで、そのタブを閉じます。
+</p>
+<p>
+この処理は<strong>メルカリの公開されている検索結果ページを読み取るだけ</strong>であり、
+ログインが必要な情報、購入履歴、メッセージ、個人情報の取得は行いません。
+収集した相場データは利用者のブラウザ内にのみ保存され（既定24時間）、外部へ送信されることはありません。
+</p>
+
+<h2>4. 外部への送信</h2>
+<p>本拡張が外部と通信するのは、次の2つの場合のみです。</p>
+<ul>
+  <li>
+    <strong>判定ルールの取得</strong>… 相場表や判定条件を記載した公開ファイルを
+    <code>raw.githubusercontent.com</code> から取得します（起動時および12時間ごと）。
+    この通信で利用者の情報を送信することはありません。
+  </li>
+  <li>
+    <strong>写真での状態判定（任意機能）</strong>… エコリングの商品ページで利用者が
+    「写真で状態を判定」ボタンを押した場合に限り、その商品の出品写真（最大8枚）と
+    商品名・ランク・注意事項を、<a href="https://www.anthropic.com/" target="_blank" rel="noopener">Anthropic PBC</a> の
+    Claude API（<code>api.anthropic.com</code>）へ送信します。
+    送信は利用者自身が設定したAPIキーを用いて行われ、利用料も利用者自身のアカウントに課金されます。
+    ボタンを押さない限り送信は発生しません。この機能を使わない場合、APIキーの設定は不要です。
+    送信されたデータの取り扱いはAnthropic社の
+    <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">プライバシーポリシー</a>に従います。
+  </li>
+</ul>
+
+<h2>5. 情報の保存場所</h2>
+<ul>
+  <li><strong>設定・判定ルール・相場データ</strong>… 利用者のブラウザ内（Chromeのローカルストレージ）にのみ保存されます。</li>
+  <li><strong>APIキー</strong>… 同じくブラウザ内にのみ保存されます。外部へ送信されるのは、上記のClaude APIへのリクエスト時のヘッダーとしてのみです。</li>
+  <li><strong>閲覧したページの内容</strong>… 判定のために一時的に読み取るのみで、保存も送信もしません。</li>
+</ul>
+
+<h2>6. 通知について</h2>
+<p>
+利益の出る候補が見つかった際に、Chromeのデスクトップ通知でお知らせします。
+通知は利用者のパソコン内で生成されるもので、外部サーバーを経由しません。
+設定画面でオフにできます。
+</p>
+
+<h2>7. 第三者への提供・販売</h2>
+<p>
+本拡張は、利用者の情報を開発者や第三者へ提供・販売・譲渡しません。
+</p>
+
+<h2>8. 利用者による削除</h2>
+<p>
+設定画面でAPIキーを空欄にして保存すると、保存済みのキーは削除されます。
+Chromeから本拡張をアンインストールすると、本拡張がブラウザ内に保存したすべてのデータが削除されます。
+</p>
+
+<h2>9. 免責</h2>
+<p>
+本拡張が表示する想定売値・想定利益はあくまで目安であり、実際の売却価格を保証するものではありません。
+仕入れの判断は利用者ご自身の責任で行ってください。
+また本拡張は、株式会社メルカリ、LINEヤフー株式会社、株式会社エコリングのいずれとも関係のない非公式のツールです。
+</p>
+
+<h2>10. 本ポリシーの変更</h2>
+<p>本ポリシーを変更する場合は、本ページの内容および最終更新日を更新します。</p>
+
+<h2>11. お問い合わせ</h2>
+<p>本拡張およびプライバシーに関するお問い合わせは、配布元よりご連絡ください。</p>
+
+<footer>利益商品ファインダー（スーツ）</footer>
+
+</body>
+</html>
