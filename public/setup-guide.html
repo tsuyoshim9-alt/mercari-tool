@@ -113,19 +113,21 @@
 アイコンが見当たらないときは、右上のパズルのピースのマークを押すと一覧が出ます。ピンのマークを押しておくと、いつも表示されて便利です。
 </div>
 
-<h2><span class="step">STEP 2</span><br>Anthropicのアカウントを作る</h2>
+<h2><span class="step">STEP 2</span><br>Claudeのアカウントを作る</h2>
 
 <p>このツールはAnthropic社のAI「Claude」を使っています。そのアカウントを作ります。</p>
 
 <ol>
-  <li><a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a> を開く</li>
-  <li>「<strong>Sign up</strong>」を押す</li>
-  <li>お持ちのGoogleアカウントで登録するのが一番かんたんです（「Continue with Google」）</li>
+  <li><a href="https://platform.claude.com/" target="_blank" rel="noopener">platform.claude.com</a> を開く</li>
+  <li>「登録」または「Sign up」を押す</li>
+  <li>お持ちのGoogleアカウントで登録するのが一番かんたんです</li>
   <li>電話番号の確認を求められたら、携帯番号を入れてSMSで届いた番号を入力します</li>
 </ol>
 
+<p>ログインすると「<strong>こんにちは、◯◯さん</strong>」と表示されるダッシュボードが開きます。ここが操作の起点になります。</p>
+
 <div class="note">
-画面は英語ですが、Chromeなら右クリック →「日本語に翻訳」で日本語表示にできます。
+もし画面が英語で表示される場合は、Chromeの右クリック →「日本語に翻訳」で日本語にできます。
 </div>
 
 <h2><span class="step">STEP 3</span><br>5ドルをチャージする</h2>
@@ -133,26 +135,37 @@
 <p>AIを使うための残高をチャージします。<strong>ここを飛ばすとツールが動きません。</strong></p>
 
 <ol>
-  <li>左メニューの「<strong>Plans</strong>」または「<strong>Billing</strong>」を開く</li>
-  <li>「<strong>Add credits</strong>」「<strong>Buy credits</strong>」などのボタンを押す</li>
+  <li>ダッシュボード左上にある「<strong>組織のクレジット</strong>」の枠を見る</li>
+  <li>その中の「<strong>資金を追加</strong>」ボタンを押す</li>
   <li>クレジットカード情報を登録する</li>
   <li>金額は<strong>最低額の5ドル</strong>でOKです</li>
 </ol>
+
+<div class="note">
+画面左下の「<strong>クレジット</strong>」からも同じ操作ができます。現在の残高もそこに表示されています。
+</div>
 
 <div class="money">
 5ドル（約750円）で<strong>100商品以上</strong>の説明文が作れます。<br>
 毎月かかる料金ではありません。使った分だけ減っていき、なくなったらまたチャージする方式です。
 </div>
 
+<div class="warn">
+⚠️ <strong>「自動リロード」にご注意ください。</strong><br>
+残高が減ったときに自動でチャージする設定があります。オンになっていると、気づかないうちに何度も課金されることがあります。<br>
+使った分だけ把握しておきたい方は、<strong>オフのままにしておく</strong>ことをおすすめします。
+</div>
+
 <h2><span class="step">STEP 4</span><br>APIキーを発行して貼り付ける</h2>
 
 <h3>キーを発行する</h3>
 <ol>
-  <li><a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com/settings/keys</a> を開く</li>
-  <li>「<strong>Create Key</strong>」を押す</li>
+  <li>画面左メニューの「<strong>APIキー</strong>」を開く<br>
+      （ダッシュボード右上の「<strong>APIキーを取得</strong>」ボタンでも同じ画面に行けます）</li>
+  <li>「<strong>キーを作成</strong>」または「Create Key」を押す</li>
   <li>名前は何でもOKです（例：<code>mercari</code>）</li>
   <li><code>sk-ant-</code> で始まる長い文字列が表示されます</li>
-  <li><strong>「Copy」を押してコピーしてください</strong></li>
+  <li><strong>「コピー」を押してコピーしてください</strong></li>
 </ol>
 
 <div class="warn">
