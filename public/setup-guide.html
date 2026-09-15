@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>メルカリ出品文 自動生成｜設定ガイド</title>
+<style>
+  :root { --red:#ff5f5f; --ink:#1f2937; --sub:#6b7280; --line:#e5e7eb; }
+  * { box-sizing: border-box; }
+  body {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 28px 18px 80px;
+    font-family: "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--ink);
+  }
+  h1 { font-size: 24px; line-height: 1.5; margin: 0 0 6px; }
+  .lead { color: var(--sub); font-size: 15px; margin: 0 0 28px; }
+  h2 {
+    font-size: 19px;
+    margin: 40px 0 12px;
+    padding-top: 24px;
+    border-top: 2px solid var(--line);
+  }
+  h3 { font-size: 16px; margin: 24px 0 6px; }
+  .step {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  ol, ul { padding-left: 24px; }
+  li { margin: 8px 0; }
+  .btn {
+    display: inline-block;
+    background: var(--red);
+    color: #fff !important;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 14px 24px;
+    border-radius: 10px;
+    margin: 12px 0;
+    font-size: 16px;
+  }
+  .note, .warn, .money {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .note { background: #f9fafb; border: 1px solid var(--line); }
+  .warn { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
+  .money { background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; }
+  .warn strong, .money strong { font-weight: 700; }
+  code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    word-break: break-all;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 15px; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; }
+  th { background: #f9fafb; font-weight: 700; }
+  a { color: #2563eb; }
+  .faq-q { font-weight: 700; margin: 20px 0 4px; }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--sub); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>メルカリ出品文 自動生成<br>かんたん設定ガイド</h1>
+<p class="lead">
+出品画面でボタンを押すだけで、写真からタイトルと商品説明文が自動で入力されるツールです。<br>
+設定は最初の1回だけ。10分ほどで終わります。
+</p>
+
+<div class="money">
+💰 <strong>費用について先にお伝えします</strong><br>
+ツール自体は無料ですが、AIの利用料が<strong>1商品あたり5〜6円ほど</strong>かかります（ご自身のアカウントに課金されます）。<br>
+最初に<strong>5ドル（約750円）のチャージが必要</strong>で、これで<strong>100商品以上</strong>作成できます。使い切るまで追加の支払いは発生しません。
+</div>
+
+<h2>全体の流れ</h2>
+<ol>
+  <li>拡張機能をChromeに追加する（1分）</li>
+  <li>Anthropicのアカウントを作る（3分）</li>
+  <li>クレジットカードを登録して5ドルチャージ（3分）</li>
+  <li>APIキーを発行して貼り付ける（3分）</li>
+</ol>
+<p>この4つが終われば、あとはずっと使えます。</p>
+
+<h2><span class="step">STEP 1</span><br>拡張機能をChromeに追加</h2>
+
+<p>下のボタンから追加してください。<strong>パソコンのChrome</strong>で開いてください（スマホでは使えません）。</p>
+
+<a class="btn" href="https://chromewebstore.google.com/detail/ombdpemhdgbjokmnidjihacpcgdljjin" target="_blank" rel="noopener">拡張機能を追加する</a>
+
+<ol>
+  <li>開いたページで「<strong>Chromeに追加</strong>」を押す</li>
+  <li>確認が出たら「<strong>拡張機能を追加</strong>」を押す</li>
+  <li>ブラウザ右上にペンのアイコンが出れば完了です</li>
+</ol>
+
+<div class="note">
+アイコンが見当たらないときは、右上のパズルのピースのマークを押すと一覧が出ます。ピンのマークを押しておくと、いつも表示されて便利です。
+</div>
+
+<h2><span class="step">STEP 2</span><br>Anthropicのアカウントを作る</h2>
+
+<p>このツールはAnthropic社のAI「Claude」を使っています。そのアカウントを作ります。</p>
+
+<ol>
+  <li><a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a> を開く</li>
+  <li>「<strong>Sign up</strong>」を押す</li>
+  <li>お持ちのGoogleアカウントで登録するのが一番かんたんです（「Continue with Google」）</li>
+  <li>電話番号の確認を求められたら、携帯番号を入れてSMSで届いた番号を入力します</li>
+</ol>
+
+<div class="note">
+画面は英語ですが、Chromeなら右クリック →「日本語に翻訳」で日本語表示にできます。
+</div>
+
+<h2><span class="step">STEP 3</span><br>5ドルをチャージする</h2>
+
+<p>AIを使うための残高をチャージします。<strong>ここを飛ばすとツールが動きません。</strong></p>
+
+<ol>
+  <li>左メニューの「<strong>Plans</strong>」または「<strong>Billing</strong>」を開く</li>
+  <li>「<strong>Add credits</strong>」「<strong>Buy credits</strong>」などのボタンを押す</li>
+  <li>クレジットカード情報を登録する</li>
+  <li>金額は<strong>最低額の5ドル</strong>でOKです</li>
+</ol>
+
+<div class="money">
+5ドル（約750円）で<strong>100商品以上</strong>の説明文が作れます。<br>
+毎月かかる料金ではありません。使った分だけ減っていき、なくなったらまたチャージする方式です。
+</div>
+
+<h2><span class="step">STEP 4</span><br>APIキーを発行して貼り付ける</h2>
+
+<h3>キーを発行する</h3>
+<ol>
+  <li><a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com/settings/keys</a> を開く</li>
+  <li>「<strong>Create Key</strong>」を押す</li>
+  <li>名前は何でもOKです（例：<code>mercari</code>）</li>
+  <li><code>sk-ant-</code> で始まる長い文字列が表示されます</li>
+  <li><strong>「Copy」を押してコピーしてください</strong></li>
+</ol>
+
+<div class="warn">
+⚠️ <strong>このキーは1回しか表示されません。</strong><br>
+画面を閉じると二度と見られなくなります（その場合は作り直せば大丈夫です）。<br>
+また、このキーは<strong>他人に教えないでください</strong>。他人に使われると、その分の料金がご自身に請求されます。
+</div>
+
+<h3>拡張機能に貼り付ける</h3>
+<ol>
+  <li>Chrome右上の<strong>ペンのアイコン</strong>をクリック</li>
+  <li>入力欄にコピーしたキーを貼り付ける（⌘+V または Ctrl+V）</li>
+  <li>「<strong>保存する</strong>」を押す</li>
+  <li>「✓ 保存しました」と出れば完了です</li>
+</ol>
+
+<div class="note">
+入力したキーは<strong>お使いのパソコンの中だけに保存</strong>されます。開発者や他の人に送信されることはありません。
+</div>
+
+<h2>使い方</h2>
+
+<ol>
+  <li>メルカリの<strong>出品画面</strong>を開く</li>
+  <li>商品の写真を追加する（先に写真を入れてください）</li>
+  <li>画面右下の「<strong>🔍 写真からタイトル・説明文を自動入力</strong>」を押す</li>
+  <li>数秒待つと、商品名と説明文が自動で入ります</li>
+  <li>他のタイトル案も表示されるので、好きなものを選べます</li>
+</ol>
+
+<div class="warn">
+⚠️ <strong>出品前に必ず内容を確認してください。</strong><br>
+AIが写真から読み取って書いているため、ブランド名やサイズが違っていることがあります。特に<strong>サイズ・採寸・状態</strong>はご自身で確認・修正をお願いします。
+</div>
+
+<h2>よくある質問</h2>
+
+<div class="faq-q">Q. ボタンが出てきません</div>
+<p>出品画面を開き直してみてください。それでも出ない場合は、Chromeを再起動するか、拡張機能が有効になっているか確認してください。</p>
+
+<div class="faq-q">Q.「APIキーが設定されていません」と出ます</div>
+<p>STEP 4 がまだ終わっていません。ペンのアイコンからキーを貼り付けて保存してください。</p>
+
+<div class="faq-q">Q.「クレジット残高が不足しています」と出ます</div>
+<p>チャージした5ドルを使い切った状態です。Anthropicの画面から追加でチャージしてください。</p>
+
+<div class="faq-q">Q. スマホでも使えますか？</div>
+<p>使えません。パソコンのChromeでのみ動作します。</p>
+
+<div class="faq-q">Q. 毎月お金がかかりますか？</div>
+<p>かかりません。チャージした残高から使った分だけ減る方式です。月額料金や自動更新はありません。</p>
+
+<div class="faq-q">Q. 1商品でいくらかかりますか？</div>
+<p>写真5枚で5〜6円ほどです。5ドル（約750円）で100商品以上作れます。</p>
+
+<div class="faq-q">Q. キーを他の人と共有してもいいですか？</div>
+<p>絶対にやめてください。使われた分の料金がご自身に請求されます。</p>
+
+<footer>
+メルカリ出品文 自動生成｜設定ガイド<br>
+このツールは株式会社メルカリとは関係のない、非公式のツールです。
+</footer>
+
+</body>
+</html>
