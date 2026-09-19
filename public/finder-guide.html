@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>アパレル利益ファインダー｜使い方ガイド</title>
+<style>
+  :root { --green:#10b981; --deep:#047857; --ink:#1f2937; --sub:#6b7280; --line:#e5e7eb; }
+  * { box-sizing: border-box; }
+  body {
+    max-width: 680px; margin: 0 auto; padding: 28px 18px 80px;
+    font-family: "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+    font-size: 16px; line-height: 1.85; color: var(--ink);
+  }
+  h1 { font-size: 24px; line-height: 1.5; margin: 0 0 6px; }
+  .lead { color: var(--sub); font-size: 15px; margin: 0 0 28px; }
+  h2 {
+    font-size: 19px; margin: 40px 0 12px;
+    padding-top: 24px; border-top: 2px solid var(--line);
+  }
+  h3 { font-size: 16px; margin: 26px 0 6px; }
+  .step {
+    display: inline-block; background: var(--deep); color: #fff;
+    font-size: 13px; font-weight: 700; padding: 3px 12px;
+    border-radius: 999px; margin-bottom: 8px;
+  }
+  ol, ul { padding-left: 24px; }
+  li { margin: 8px 0; }
+  .btn {
+    display: inline-block; background: var(--deep); color: #fff !important;
+    font-weight: 700; text-decoration: none; padding: 14px 24px;
+    border-radius: 10px; margin: 12px 0; font-size: 16px;
+  }
+  .note, .warn, .tip {
+    border-radius: 10px; padding: 14px 18px; margin: 18px 0;
+    font-size: 15px; line-height: 1.75;
+  }
+  .note { background: #f9fafb; border: 1px solid var(--line); }
+  .warn { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
+  .tip  { background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 15px; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: #f9fafb; font-weight: 700; white-space: nowrap; }
+  code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 14px; }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 6px;
+    font-weight: 700; font-size: 14px; color: #fff; white-space: nowrap;
+  }
+  .b-hit { background: #dc2626; }
+  .b-opp { background: #b45309; }
+  a { color: #2563eb; }
+  .faq-q { font-weight: 700; margin: 20px 0 4px; }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--sub); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>アパレル利益ファインダー<br>使い方ガイド</h1>
+<p class="lead">
+メルカリ・ヤフオク・エコリングを<strong>いつも通り見ているだけ</strong>で、利益が出そうな出品に自動で印をつけるツールです。<br>
+面倒な設定はありません。インストールしてすぐ使えます。
+</p>
+
+<div class="tip">
+✅ <strong>費用はかかりません。</strong> 無料で使えます。<br>
+（エコリングの「写真で状態を判定」ボタンだけ、使いたい方のみ別途設定が必要です。使わなければ費用は一切かかりません）
+</div>
+
+<h2>このツールでできること</h2>
+
+<ul>
+  <li>検索していると、<strong>利益が出そうな商品に赤いバッジ</strong>が付きます</li>
+  <li>商品ページを開くと、<strong>過去にメルカリで実際に売れた価格</strong>から想定利益を計算します</li>
+  <li>仕入れ前に注意すべき点（ダメージ記載・お直し跡・パンツの有無）を<strong>自動で警告</strong>します</li>
+  <li>高く売れる要素（生地ブランド・仕立て・サイズ）を<strong>自動で抜き出し</strong>ます</li>
+  <li>ヤフオク・エコリングでは「<strong>いくらまで入札すれば利益が出るか</strong>」の上限額が出ます</li>
+</ul>
+
+<h2><span class="step">STEP 1</span><br>インストール</h2>
+
+<p><strong>パソコンのChrome</strong>で下のボタンを開いてください（スマホでは使えません）。</p>
+
+<a class="btn" href="https://chromewebstore.google.com/detail/kbnlgapbnmkojgpcdjmengpjhombibdn" target="_blank" rel="noopener">拡張機能を追加する</a>
+
+<ol>
+  <li>「<strong>Chromeに追加</strong>」を押す</li>
+  <li>確認が出たら「<strong>拡張機能を追加</strong>」を押す</li>
+  <li>ブラウザ右上に緑の虫めがねアイコンが出れば完了です</li>
+</ol>
+
+<div class="note">
+アイコンが見当たらないときは、右上のパズルのピースのマークを押すと一覧が出ます。ピンのマークを押しておくと、いつも表示されて便利です。
+</div>
+
+<h2><span class="step">STEP 2</span><br>最初の設定</h2>
+
+<p>そのままでも使えますが、<strong>最低利益額</strong>だけはご自身の基準に合わせておくのがおすすめです。</p>
+
+<p>右上の<strong>緑の虫めがねアイコン</strong>をクリックすると設定画面が開きます。</p>
+
+<table>
+  <tr><th>項目</th><th>説明</th></tr>
+  <tr>
+    <td>最低利益の目安</td>
+    <td>この金額以上の利益が見込める商品だけにバッジが付きます。<strong>初期値は4,000円</strong>です。もっと絞りたければ上げ、幅広く見たければ下げてください。</td>
+  </tr>
+  <tr>
+    <td>最低利益率</td>
+    <td>利益率でも絞りたい場合に使います。0のままなら金額だけで判定します。</td>
+  </tr>
+  <tr>
+    <td>対象ブランド</td>
+    <td><strong>空欄のままでOK</strong>です。空欄だと、登録済みのブランドすべてが対象になります。</td>
+  </tr>
+  <tr>
+    <td>有効にするサイト</td>
+    <td>メルカリ・ヤフオク・エコリングのどれで動かすかを選べます。</td>
+  </tr>
+  <tr>
+    <td>通知</td>
+    <td>利益候補が見つかったときにデスクトップ通知を出すかどうか。</td>
+  </tr>
+</table>
+
+<div class="note">
+設定画面の一番下に「<strong>判定ルール: v〇〇（中央サーバー）</strong>」と表示されていればOKです。ブランドごとの相場は自動で最新に保たれるので、こちらで更新した内容が自動的に届きます。
+</div>
+
+<h2><span class="step">STEP 3</span><br>画面の見方</h2>
+
+<h3>検索結果の画面</h3>
+
+<p>メルカリでいつも通り検索すると、利益が出そうな商品に <span class="badge b-hit">🔥 利益 ¥7,200</span> のようなバッジが付きます。</p>
+
+<p>画面の右下にはまとめパネルが出ます。</p>
+
+<table>
+  <tr><th>対象</th><td>登録ブランドに当てはまった商品の数</td></tr>
+  <tr><th>利益候補</th><td>そのうち、利益が見込めると判定した数</td></tr>
+  <tr><th>候補リスト</th><td>クリックするとその商品ページが開きます</td></tr>
+</table>
+
+<div class="note">
+バッジは<strong>いま画面に映っている商品</strong>だけに付きます。スクロールすると新しく読み込まれた商品に付いていきます。
+</div>
+
+<h3>商品ページ</h3>
+
+<p>商品ページを開くと、右下に詳しい計算結果が出ます。</p>
+
+<table>
+  <tr><th>想定売値</th><td>過去にメルカリで売れた価格から算出した、売れそうな金額</td></tr>
+  <tr><th>現在価格</th><td>いまの出品価格</td></tr>
+  <tr><th>送料・手数料</th><td>差し引かれる分（手数料10％）</td></tr>
+  <tr><th>想定利益</th><td><strong>これが実質的に残る金額</strong>です（利益率も表示）</td></tr>
+</table>
+
+<p>開いてから10〜20秒ほどで「過去のメルカリの売れた相場」を自動で取得し、より正確な金額に更新されます。取得中は一時的に暫定の金額が表示されます。</p>
+
+<h3>3つの警告</h3>
+
+<table>
+  <tr>
+    <th>赤い警告</th>
+    <td><strong>ダメージ・補修の記載あり</strong>。説明文に傷・汚れ・ほつれなどの記載を見つけた場合に出ます。該当する言葉は、ページの説明文の中で赤くマークされます。</td>
+  </tr>
+  <tr>
+    <th>オレンジの注意</th>
+    <td><strong>お直し済みの可能性</strong>。裾上げやウエスト出しの記載があると出ます。サイズが限定されるため相場が下がることがあります。</td>
+  </tr>
+  <tr>
+    <th>パンツの確認</th>
+    <td>スーツで<strong>ジャケットだけの出品かもしれない</strong>場合に出ます。パンツがないと売値が大きく下がるので、写真で必ず確認してください。</td>
+  </tr>
+</table>
+
+<h3>💡 高値・利益ポイント</h3>
+
+<p>その商品が<strong>なぜ高く売れそうか</strong>を自動で抜き出して表示します。</p>
+
+<ul>
+  <li>高級生地（ゼニア・ロロピアーナ・カノニコなど）</li>
+  <li>仕立ての良さ（本切羽・毛芯・ハンドメイド・オーダー品）</li>
+  <li>3ピース、ダブル、裏地のデザイン</li>
+  <li>大きめサイズ（着られる人が限られるぶん希少）</li>
+</ul>
+
+<p>ここに何も出ない場合は、写真で生地表記・裏地・年式・サイズを確認してみてください。</p>
+
+<h2>ヤフオク・エコリングの場合</h2>
+
+<h3>ヤフオク</h3>
+<p>オークションなので「想定利益」ではなく「<strong>損益分岐入札額</strong>」が出ます。<strong>この金額までなら入札しても利益が残る</strong>という上限です。</p>
+
+<h3>エコリング</h3>
+<p>通常の利益判定に加えて、<span class="badge b-opp">🎯 狙い目</span> という印が付くことがあります。</p>
+
+<div class="tip">
+<strong>「狙い目」とは？</strong><br>
+エコリングは出品量が多すぎて1点ずつ検品しきれず、<strong>本当は状態が良いのにジャンク扱い・おまとめ扱いになっている</strong>ことがあります。こうした出品はライバルが敬遠するため、安く落とせる可能性があります。<br>
+つまり「低ランク＝ダメ」ではなく「<strong>ライバルが避けるから要チェック</strong>」という合図です。
+</div>
+
+<p>次のような場合に付きます。</p>
+<ul>
+  <li>ランクがF・D・Cなど低い</li>
+  <li>「おまとめ」「まとめ売り」などの複数点セット</li>
+  <li>「ノークレーム」「1点毎の詳細未確認」などの記載</li>
+</ul>
+
+<p>右下のパネルに候補が一覧で出るので、クリックして<strong>写真で1点ずつ状態を確認</strong>してください。</p>
+
+<h2>よくある質問</h2>
+
+<div class="faq-q">Q. バッジが1つも出ません</div>
+<p>対象が「登録済みブランドのスーツ上下」に絞られています。ノーブランド品や単品のジャケットには付きません。また、最低利益額を高く設定していると候補が減ります。</p>
+
+<div class="faq-q">Q. 「過去の相場を取得中…」のまま止まります</div>
+<p>メルカリ側の仕様変更で一時的に動かなくなることがあります。その場合はご連絡ください。修正版をお送りします。</p>
+
+<div class="faq-q">Q. スマホでも使えますか？</div>
+<p>使えません。パソコンのChromeでのみ動作します。</p>
+
+<div class="faq-q">Q. 勝手に入札や購入をしませんか？</div>
+<p>しません。開いている画面を読んで表示を足すだけのツールです。自動での巡回・入札・購入は一切行いません。</p>
+
+<div class="faq-q">Q. 対象ブランドを増やせますか？</div>
+<p>可能です。「このブランドが抜けている」「この相場が実感と違う」といったご意見をいただければ、こちらで更新します。更新は<strong>自動的に全員に反映</strong>されるので、皆さんの再インストールは不要です。</p>
+
+<div class="warn">
+⚠️ <strong>仕入れの判断は必ずご自身で行ってください。</strong><br>
+表示される想定売値・想定利益は、過去の実売データをもとにした<strong>目安</strong>です。実際の売却価格を保証するものではありません。<br>
+商品の状態・真贋の最終確認は、必ず写真と説明文でご自身が行ってください。
+</div>
+
+<footer>
+アパレル利益ファインダー｜使い方ガイド<br>
+本ツールは株式会社メルカリ、LINEヤフー株式会社、株式会社エコリングとは関係のない、非公式のツールです。
+</footer>
+
+</body>
+</html>
