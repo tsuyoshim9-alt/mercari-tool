@@ -1,5 +1,5 @@
 {
-  "version": "2026.09.19-leather-6",
+  "version": "2026.09.19-quote-1",
   "updatedAt": "2026-09-19",
   "category": "suits",
   "note": "スーツ特化版の判定基準。ここを更新して公開リポジトリに push すると全受講生に自動反映される。brands の resaleYen は必ず自分の実売データで調整すること。",
@@ -55,6 +55,19 @@
     "trimPercent": 0.1,
     "auto": true,
     "__auto_note": "商品ページを開いたら自動で過去の売れ相場を取得する（24hキャッシュ）"
+  },
+  "__brandQuote_note": "検索結果の一覧で使う「ブランド×カテゴリのざっくり相場」の設定。該当カテゴリの商品を見つけると、そのブランドの売り切れ相場を1回だけ調べて保存し、以後はその金額で一覧を判定する。keywords に無いカテゴリは調べない。",
+  "brandQuote": {
+    "enabled": true,
+    "cacheHours": 24,
+    "minSamples": 4,
+    "trimPercent": 0.1,
+    "maxPerScan": 3,
+    "keywords": {
+      "スーツ上下": "スーツ",
+      "テーラードジャケット": "テーラードジャケット",
+      "レザージャケット": "レザージャケット"
+    }
   },
   "conditions": [
     {
