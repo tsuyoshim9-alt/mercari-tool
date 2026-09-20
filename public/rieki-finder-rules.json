@@ -1,5 +1,5 @@
 {
-  "version": "2026.09.20-pastsales-3",
+  "version": "2026.09.20-pastsales-4",
   "updatedAt": "2026-09-19",
   "category": "suits",
   "note": "スーツ特化版の判定基準。ここを更新して公開リポジトリに push すると全受講生に自動反映される。brands の resaleYen は必ず自分の実売データで調整すること。",
@@ -3232,7 +3232,7 @@
     "裾幅"
   ],
   "pastSales": {
-    "__note": "村田さんの過去の販売実績（2026-04-01〜06-26 / 取引完了133件）から、利益5,000円以上が一度でも出たブランド。エコリングの画面で同じブランドを見つけたら知らせる。画面には金額を出さず、ブランド名と実績件数だけを出す。新しい販売データを取り込むときは集計を作り直すこと。",
+    "__note": "村田さんの過去の販売実績（2026-04-01〜06-26 / 取引完了133件）から、売値10,000円以上かつ利益5,000円以上が一度でも出たブランド。エコリングで同じブランドを見つけたら知らせる。画面には金額を出さず、ブランド名と実績件数だけを出す。apparelOnly=true のときは衣類だけを対象にし、バッグ・財布・靴・時計・小物には反応しない。※CSVに品目の欄が無いため、上の実績にはバッグ等も混ざっている。画面側で衣類だけに絞っている。",
     "enabled": true,
     "source": "売上明細_20260401_20260626.csv",
     "period": "2026-04-01〜2026-06-26",
@@ -3245,9 +3245,9 @@
           "prada"
         ],
         "count": 21,
-        "medianProfit": 7650,
-        "maxProfit": 20810,
-        "over": 16
+        "qualified": 16,
+        "medianSale": 24900,
+        "medianProfit": 8460
       },
       {
         "name": "グッチ",
@@ -3255,9 +3255,9 @@
           "gucci"
         ],
         "count": 20,
-        "medianProfit": 4415,
-        "maxProfit": 12070,
-        "over": 9
+        "qualified": 9,
+        "medianSale": 26000,
+        "medianProfit": 9120
       },
       {
         "name": "ポールスミス",
@@ -3267,9 +3267,9 @@
           "ポール・スミス"
         ],
         "count": 10,
-        "medianProfit": 5570,
-        "maxProfit": 19370,
-        "over": 7
+        "qualified": 5,
+        "medianSale": 21700,
+        "medianProfit": 9350
       },
       {
         "name": "バーバリー",
@@ -3277,29 +3277,9 @@
           "burberry"
         ],
         "count": 10,
-        "medianProfit": 1642,
-        "maxProfit": 10302,
-        "over": 4
-      },
-      {
-        "name": "モンクレール",
-        "aliases": [
-          "moncler"
-        ],
-        "count": 7,
-        "medianProfit": 12840,
-        "maxProfit": 22750,
-        "over": 6
-      },
-      {
-        "name": "セリーヌ",
-        "aliases": [
-          "celine"
-        ],
-        "count": 7,
-        "medianProfit": 9570,
-        "maxProfit": 22220,
-        "over": 5
+        "qualified": 4,
+        "medianSale": 17000,
+        "medianProfit": 7500
       },
       {
         "name": "ルイヴィトン",
@@ -3308,9 +3288,29 @@
           "ヴィトン"
         ],
         "count": 7,
-        "medianProfit": 4600,
-        "maxProfit": 44270,
-        "over": 3
+        "qualified": 3,
+        "medianSale": 34800,
+        "medianProfit": 7300
+      },
+      {
+        "name": "モンクレール",
+        "aliases": [
+          "moncler"
+        ],
+        "count": 7,
+        "qualified": 6,
+        "medianSale": 32400,
+        "medianProfit": 13095
+      },
+      {
+        "name": "セリーヌ",
+        "aliases": [
+          "celine"
+        ],
+        "count": 7,
+        "qualified": 5,
+        "medianSale": 27600,
+        "medianProfit": 16730
       },
       {
         "name": "ボッテガヴェネタ",
@@ -3320,9 +3320,9 @@
           "bottega"
         ],
         "count": 5,
-        "medianProfit": 8020,
-        "maxProfit": 16050,
-        "over": 4
+        "qualified": 4,
+        "medianSale": 31500,
+        "medianProfit": 10285
       },
       {
         "name": "クリスチャンディオール",
@@ -3332,9 +3332,9 @@
           "christian dior"
         ],
         "count": 5,
-        "medianProfit": 4870,
-        "maxProfit": 11820,
-        "over": 2
+        "qualified": 2,
+        "medianSale": 26650,
+        "medianProfit": 9230
       },
       {
         "name": "フェンディ",
@@ -3342,9 +3342,9 @@
           "fendi"
         ],
         "count": 4,
-        "medianProfit": 2360,
-        "maxProfit": 6920,
-        "over": 1
+        "qualified": 1,
+        "medianSale": 13000,
+        "medianProfit": 6920
       },
       {
         "name": "バレンシアガ",
@@ -3352,9 +3352,9 @@
           "balenciaga"
         ],
         "count": 3,
-        "medianProfit": 15150,
-        "maxProfit": 43310,
-        "over": 3
+        "qualified": 3,
+        "medianSale": 57400,
+        "medianProfit": 15150
       },
       {
         "name": "サルヴァトーレフェラガモ",
@@ -3364,9 +3364,9 @@
           "ferragamo"
         ],
         "count": 2,
-        "medianProfit": 27380,
-        "maxProfit": 40990,
-        "over": 2
+        "qualified": 2,
+        "medianSale": 41200,
+        "medianProfit": 27380
       },
       {
         "name": "ヴェルサーチ",
@@ -3375,9 +3375,9 @@
           "ヴェルサーチェ"
         ],
         "count": 2,
-        "medianProfit": 7255,
-        "maxProfit": 7690,
-        "over": 2
+        "qualified": 2,
+        "medianSale": 16650,
+        "medianProfit": 7255
       },
       {
         "name": "エトロ",
@@ -3385,19 +3385,19 @@
           "etro"
         ],
         "count": 1,
-        "medianProfit": 17350,
-        "maxProfit": 17350,
-        "over": 1
+        "qualified": 1,
+        "medianSale": 41500,
+        "medianProfit": 17350
       },
       {
-        "name": "フォクシー",
+        "name": "ロエベ",
         "aliases": [
-          "foxey"
+          "loewe"
         ],
         "count": 1,
-        "medianProfit": 13827,
-        "maxProfit": 13827,
-        "over": 1
+        "qualified": 1,
+        "medianSale": 23800,
+        "medianProfit": 5570
       },
       {
         "name": "アルマーニ",
@@ -3407,29 +3407,19 @@
           "ジョルジオアルマーニ"
         ],
         "count": 1,
-        "medianProfit": 9685,
-        "maxProfit": 9685,
-        "over": 1
+        "qualified": 1,
+        "medianSale": 19188,
+        "medianProfit": 9685
       },
       {
-        "name": "エルメス",
+        "name": "フォクシー",
         "aliases": [
-          "hermes"
+          "foxey"
         ],
         "count": 1,
-        "medianProfit": 7692,
-        "maxProfit": 7692,
-        "over": 1
-      },
-      {
-        "name": "ロエベ",
-        "aliases": [
-          "loewe"
-        ],
-        "count": 1,
-        "medianProfit": 5570,
-        "maxProfit": 5570,
-        "over": 1
+        "qualified": 1,
+        "medianSale": 18800,
+        "medianProfit": 13827
       },
       {
         "name": "ヘルノ",
@@ -3437,22 +3427,122 @@
           "herno"
         ],
         "count": 1,
-        "medianProfit": 5420,
-        "maxProfit": 5420,
-        "over": 1
+        "qualified": 1,
+        "medianSale": 17300,
+        "medianProfit": 5420
       },
       {
-        "name": "ブルネロクチネリ",
+        "name": "エルメス",
         "aliases": [
-          "brunello cucinelli",
-          "クチネリ"
+          "hermes"
         ],
         "count": 1,
-        "medianProfit": 5250,
-        "maxProfit": 5250,
-        "over": 1
+        "qualified": 1,
+        "medianSale": 11804,
+        "medianProfit": 7692
       }
     ],
-    "rule": "maxProfit >= minProfitYen"
+    "rule": "sale >= minSaleYen && profit >= minProfitYen",
+    "minSaleYen": 10000,
+    "apparelOnly": true,
+    "apparelWords": [
+      "ジャケット",
+      "コート",
+      "ブルゾン",
+      "ダウン",
+      "ムートン",
+      "スーツ",
+      "セットアップ",
+      "ニット",
+      "セーター",
+      "カーディガン",
+      "カットソー",
+      "シャツ",
+      "ブラウス",
+      "ワンピース",
+      "スカート",
+      "パンツ",
+      "スラックス",
+      "デニム",
+      "ジーンズ",
+      "ベスト",
+      "ジレ",
+      "パーカー",
+      "スウェット",
+      "トレーナー",
+      "ポロシャツ",
+      "tシャツ",
+      "ライダース",
+      "トレンチ",
+      "チェスター",
+      "ステンカラー",
+      "モッズ",
+      "ダッフル",
+      "ピーコート",
+      "アウター",
+      "ブレザー",
+      "テーラード",
+      "カシミヤコート",
+      "上下",
+      "トップス",
+      "ボトム",
+      "衣料",
+      "洋服",
+      "ウェア"
+    ],
+    "nonApparelWords": [
+      "バッグ",
+      "バック",
+      "かばん",
+      "鞄",
+      "トート",
+      "ショルダー",
+      "ハンドバッグ",
+      "ボストン",
+      "リュック",
+      "バックパック",
+      "ポーチ",
+      "クラッチ",
+      "財布",
+      "長財布",
+      "二つ折り",
+      "カードケース",
+      "名刺入れ",
+      "キーケース",
+      "パスケース",
+      "コインケース",
+      "靴",
+      "シューズ",
+      "スニーカー",
+      "ローファー",
+      "パンプス",
+      "ブーツ",
+      "サンダル",
+      "革靴",
+      "ベルト",
+      "時計",
+      "ウォッチ",
+      "サングラス",
+      "眼鏡",
+      "メガネ",
+      "ネクタイ",
+      "スカーフ",
+      "ストール",
+      "マフラー",
+      "手袋",
+      "帽子",
+      "キャップ",
+      "ハット",
+      "アクセサリー",
+      "ネックレス",
+      "ブレスレット",
+      "リング",
+      "指輪",
+      "ピアス",
+      "イヤリング",
+      "ブローチ",
+      "カフス",
+      "香水"
+    ]
   }
 }
