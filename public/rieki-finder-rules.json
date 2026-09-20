@@ -1,5 +1,5 @@
 {
-  "version": "2026.09.20-pastsales-1",
+  "version": "2026.09.20-pastsales-3",
   "updatedAt": "2026-09-19",
   "category": "suits",
   "note": "スーツ特化版の判定基準。ここを更新して公開リポジトリに push すると全受講生に自動反映される。brands の resaleYen は必ず自分の実売データで調整すること。",
@@ -3232,7 +3232,7 @@
     "裾幅"
   ],
   "pastSales": {
-    "__note": "村田さんの過去の販売実績（2026-04-01〜06-26 / 取引完了133件）から、利益5,000円以上が一度でも出たブランド。エコリングの画面で同じブランドを見つけたら知らせる。minProfitYen を変えて絞り込みを変えられるが、下の実績値は取り込み時点の集計なので、新しい販売データを取り込むときは作り直すこと。",
+    "__note": "村田さんの過去の販売実績（2026-04-01〜06-26 / 取引完了133件）から、利益5,000円以上が一度でも出たブランド。エコリングの画面で同じブランドを見つけたら知らせる。画面には金額を出さず、ブランド名と実績件数だけを出す。新しい販売データを取り込むときは集計を作り直すこと。",
     "enabled": true,
     "source": "売上明細_20260401_20260626.csv",
     "period": "2026-04-01〜2026-06-26",
@@ -3240,46 +3240,46 @@
     "minProfitYen": 5000,
     "brands": [
       {
-        "name": "サルヴァトーレフェラガモ",
+        "name": "プラダ",
         "aliases": [
-          "フェラガモ",
-          "salvatore ferragamo",
-          "ferragamo"
+          "prada"
         ],
-        "count": 2,
-        "medianProfit": 27380,
-        "maxProfit": 40990,
-        "over": 2
+        "count": 21,
+        "medianProfit": 7650,
+        "maxProfit": 20810,
+        "over": 16
       },
       {
-        "name": "エトロ",
+        "name": "グッチ",
         "aliases": [
-          "etro"
+          "gucci"
         ],
-        "count": 1,
-        "medianProfit": 17350,
-        "maxProfit": 17350,
-        "over": 1
+        "count": 20,
+        "medianProfit": 4415,
+        "maxProfit": 12070,
+        "over": 9
       },
       {
-        "name": "バレンシアガ",
+        "name": "ポールスミス",
         "aliases": [
-          "balenciaga"
+          "paul smith",
+          "paulsmith",
+          "ポール・スミス"
         ],
-        "count": 3,
-        "medianProfit": 15150,
-        "maxProfit": 43310,
-        "over": 3
+        "count": 10,
+        "medianProfit": 5570,
+        "maxProfit": 19370,
+        "over": 7
       },
       {
-        "name": "フォクシー",
+        "name": "バーバリー",
         "aliases": [
-          "foxey"
+          "burberry"
         ],
-        "count": 1,
-        "medianProfit": 13827,
-        "maxProfit": 13827,
-        "over": 1
+        "count": 10,
+        "medianProfit": 1642,
+        "maxProfit": 10302,
+        "over": 4
       },
       {
         "name": "モンクレール",
@@ -3292,18 +3292,6 @@
         "over": 6
       },
       {
-        "name": "アルマーニ",
-        "aliases": [
-          "armani",
-          "エンポリオアルマーニ",
-          "ジョルジオアルマーニ"
-        ],
-        "count": 1,
-        "medianProfit": 9685,
-        "maxProfit": 9685,
-        "over": 1
-      },
-      {
         "name": "セリーヌ",
         "aliases": [
           "celine"
@@ -3312,6 +3300,17 @@
         "medianProfit": 9570,
         "maxProfit": 22220,
         "over": 5
+      },
+      {
+        "name": "ルイヴィトン",
+        "aliases": [
+          "louis vuitton",
+          "ヴィトン"
+        ],
+        "count": 7,
+        "medianProfit": 4600,
+        "maxProfit": 44270,
+        "over": 3
       },
       {
         "name": "ボッテガヴェネタ",
@@ -3326,24 +3325,48 @@
         "over": 4
       },
       {
-        "name": "エルメス",
+        "name": "クリスチャンディオール",
         "aliases": [
-          "hermes"
+          "dior",
+          "ディオール",
+          "christian dior"
         ],
-        "count": 1,
-        "medianProfit": 7692,
-        "maxProfit": 7692,
+        "count": 5,
+        "medianProfit": 4870,
+        "maxProfit": 11820,
+        "over": 2
+      },
+      {
+        "name": "フェンディ",
+        "aliases": [
+          "fendi"
+        ],
+        "count": 4,
+        "medianProfit": 2360,
+        "maxProfit": 6920,
         "over": 1
       },
       {
-        "name": "プラダ",
+        "name": "バレンシアガ",
         "aliases": [
-          "prada"
+          "balenciaga"
         ],
-        "count": 21,
-        "medianProfit": 7650,
-        "maxProfit": 20810,
-        "over": 16
+        "count": 3,
+        "medianProfit": 15150,
+        "maxProfit": 43310,
+        "over": 3
+      },
+      {
+        "name": "サルヴァトーレフェラガモ",
+        "aliases": [
+          "フェラガモ",
+          "salvatore ferragamo",
+          "ferragamo"
+        ],
+        "count": 2,
+        "medianProfit": 27380,
+        "maxProfit": 40990,
+        "over": 2
       },
       {
         "name": "ヴェルサーチ",
@@ -3357,16 +3380,46 @@
         "over": 2
       },
       {
-        "name": "ポールスミス",
+        "name": "エトロ",
         "aliases": [
-          "paul smith",
-          "paulsmith",
-          "ポール・スミス"
+          "etro"
         ],
-        "count": 10,
-        "medianProfit": 5570,
-        "maxProfit": 19370,
-        "over": 7
+        "count": 1,
+        "medianProfit": 17350,
+        "maxProfit": 17350,
+        "over": 1
+      },
+      {
+        "name": "フォクシー",
+        "aliases": [
+          "foxey"
+        ],
+        "count": 1,
+        "medianProfit": 13827,
+        "maxProfit": 13827,
+        "over": 1
+      },
+      {
+        "name": "アルマーニ",
+        "aliases": [
+          "armani",
+          "エンポリオアルマーニ",
+          "ジョルジオアルマーニ"
+        ],
+        "count": 1,
+        "medianProfit": 9685,
+        "maxProfit": 9685,
+        "over": 1
+      },
+      {
+        "name": "エルメス",
+        "aliases": [
+          "hermes"
+        ],
+        "count": 1,
+        "medianProfit": 7692,
+        "maxProfit": 7692,
+        "over": 1
       },
       {
         "name": "ロエベ",
@@ -3398,61 +3451,8 @@
         "medianProfit": 5250,
         "maxProfit": 5250,
         "over": 1
-      },
-      {
-        "name": "クリスチャンディオール",
-        "aliases": [
-          "dior",
-          "ディオール",
-          "christian dior"
-        ],
-        "count": 5,
-        "medianProfit": 4870,
-        "maxProfit": 11820,
-        "over": 2
-      },
-      {
-        "name": "ルイヴィトン",
-        "aliases": [
-          "louis vuitton",
-          "ヴィトン",
-          "lv"
-        ],
-        "count": 7,
-        "medianProfit": 4600,
-        "maxProfit": 44270,
-        "over": 3
-      },
-      {
-        "name": "グッチ",
-        "aliases": [
-          "gucci"
-        ],
-        "count": 20,
-        "medianProfit": 4415,
-        "maxProfit": 12070,
-        "over": 9
-      },
-      {
-        "name": "フェンディ",
-        "aliases": [
-          "fendi"
-        ],
-        "count": 4,
-        "medianProfit": 2360,
-        "maxProfit": 6920,
-        "over": 1
-      },
-      {
-        "name": "バーバリー",
-        "aliases": [
-          "burberry"
-        ],
-        "count": 10,
-        "medianProfit": 1642,
-        "maxProfit": 10302,
-        "over": 4
       }
-    ]
+    ],
+    "rule": "maxProfit >= minProfitYen"
   }
 }
